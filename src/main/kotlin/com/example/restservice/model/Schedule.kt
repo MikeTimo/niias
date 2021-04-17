@@ -1,15 +1,8 @@
 package com.example.restservice.model
 
 import java.time.LocalDateTime
-//import javax.persistence.Entity
-//import javax.persistence.GeneratedValue
-//import javax.persistence.Id
 
-//@Entity
 class Schedule {
-//    @Id
-//    @GeneratedValue
-//    var id: Long? = null
     private var trainNumber: Int = 0
     private var driverNumber: Int = 0
     private var stationFrom: Int = 0
