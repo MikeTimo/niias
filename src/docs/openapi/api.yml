@@ -13,6 +13,7 @@ paths:
           required: true
           schema:
             type: object
+            default: false
       responses:
         200:
           description: Successful response
@@ -20,56 +21,34 @@ paths:
             application/json:
               schema:
                 type: object
-                items:
-                  properties:
-                    id:
-                      type: integer
-                      example: 1
-
-                    schedule trainnumber:
-                      type: integer
-                      example: 2
-
-                    schedule drivernumber:
-                      type: integer
-                      example: 3
-
-                    schedule stationfrom:
-                      type: integer
-                      example: 10
-
-                    schedule timefrom:
-                      type: object
-
-                    schedule stationto:
-                      type: integer
-                      example: 11
-
-                    schedule timeto:
-                      type: object
-
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
                 properties:
-                  message:
-                    type: string
-                    example: Bad request
+                  id:
+                    type: integer
+                    format: int64
 
+                  schedule trainnumber:
+                    type: integer
+                    format: int64
 
-        404:
-          description: Not founds
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
+                  schedule drivernumber:
+                    type: integer
+                    format: int64
+
+                  schedule stationfrom:
+                    type: integer
+                    format: int64
+
+                  schedule timefrom:
                     type: string
-                    example: Not founds
+                    format: 'date-time'
+
+                  schedule stationto:
+                    type: integer
+                    format: int64
+
+                  schedule timeto:
+                    type: string
+                    format: 'date-time'
 
     post:
       summary: 'Добавляет объект "Расписание"'
@@ -93,29 +72,26 @@ paths:
                   example: 3
 
                 schedule stationfrom:
-                    type: integer
-                    example: 10
+                  type: integer
+                  example: 10
 
                 schedule timefrom:
-                    type: object
+                  type: string
+                  format: 'date-time'
 
                 schedule stationto:
-                    type: integer
-                    example: 11
+                  type: integer
+                  example: 11
 
                 schedule timeto:
-                    type: object
+                  type: string
+                  format: 'date-time'
 
       responses:
         200:
           description: OK
-
-        400:
-          description: Invalid request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
+                type: string
+                example: OK
