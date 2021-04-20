@@ -20,35 +20,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    format: int64
-
-                  schedule trainnumber:
-                    type: integer
-                    format: int64
-
-                  schedule drivernumber:
-                    type: integer
-                    format: int64
-
-                  schedule stationfrom:
-                    type: integer
-                    format: int64
-
-                  schedule timefrom:
-                    type: string
-                    format: 'date-time'
-
-                  schedule stationto:
-                    type: integer
-                    format: int64
-
-                  schedule timeto:
-                    type: string
-                    format: 'date-time'
+                items:
+                  $ref: '#/components/schemas/schedule'
 
     post:
       summary: 'Добавляет объект "Расписание"'
@@ -57,35 +30,8 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  example: 1
-
-                schedule trainnumber:
-                  type: integer
-                  example: 2
-
-                schedule drivernumber:
-                  type: integer
-                  example: 3
-
-                schedule stationfrom:
-                  type: integer
-                  example: 10
-
-                schedule timefrom:
-                  type: string
-                  format: 'date-time'
-
-                schedule stationto:
-                  type: integer
-                  example: 11
-
-                schedule timeto:
-                  type: string
-                  format: 'date-time'
+              items:
+                $ref: '#/components/schemas/schedule'
 
       responses:
         200:
@@ -95,3 +41,37 @@ paths:
               schema:
                 type: string
                 example: OK
+
+components:
+  schemas:
+    schedule:
+      description: Объект "Расписание"
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+
+        schedule trainnumber:
+          type: integer
+          format: int64
+
+        schedule drivernumber:
+          type: integer
+          format: int64
+
+        schedule stationfrom:
+          type: integer
+          format: int64
+
+        schedule timefrom:
+          type: string
+          format: 'date-time'
+
+        schedule stationto:
+          type: integer
+          format: int64
+
+        schedule timeto:
+          type: string
+          format: 'date-time'
