@@ -1,26 +1,28 @@
 package com.example.restservice.controller
 
 import com.example.restservice.model.Schedule
+import com.example.restservice.service.ScheduleServer
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
-import java.time.Month
-
-import java.time.LocalDateTime
 
 @RestController
 class Controller {
 
+    private lateinit var scheduleServer: ScheduleServer
+
     @GetMapping("/schedule")
-    fun get(@RequestParam(value = "data") data: LocalDate): Schedule {
-        val dataFrom = LocalDateTime.of(2017, Month.JULY, 9, 11, 6, 0)
-        val dataTo = LocalDateTime.of(2017, Month.JULY, 9, 13, 15, 0)
-        return Schedule(2, 37, 5, dataFrom, 10, dataTo)
+    fun get(
+        @RequestParam(value = "data") data: LocalDate,
+        @RequestParam(value = "trainNumber") trainNumber: Int
+    ): Schedule? {
+        return scheduleServer.getSchedule(trainNumber, data)
     }
 
     @PostMapping("/schedule")
     @ResponseStatus(HttpStatus.OK)
     fun post(@RequestBody schedule: Schedule): String {
+        scheduleServer.saveSchedule(schedule)
         return "OK"
     }
 }
