@@ -3,11 +3,11 @@ app:
   port=8080
 
  schedele:
-  trainNumber = 1
-  driverNumber = 4
-  departureStation = 1
-  departureTime = 2021-04-25T13:03:27.392
-  arrivalStation = 5
-  arrivalTime = 2021-04-25T14:33:27.392
+  trainNumber: 1
+  driverNumber: 4
+  departureStation: 1
+  departureTime: 2021-04-25T13:03:27.392
+  arrivalStation: 5
+  arrivalTime: 2021-04-25T14:33:27.392
 
 
