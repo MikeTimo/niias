@@ -1,13 +1,13 @@
 package com.example.restservice.service
 
 import com.example.restservice.model.Schedule
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.concurrent.ConcurrentHashMap
 
-@Service
-class ScheduleServer {
+@Component
+class ScheduleService {
     var scheduleMap: MutableMap<Int, Schedule> = ConcurrentHashMap()
 
     @Synchronized

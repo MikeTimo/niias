@@ -10,5 +10,7 @@ import org.springframework.boot.runApplication
 class RestServiceApplication
 
 fun main(args: Array<String>) {
-    runApplication<RestServiceApplication>(*args)
+    val context = runApplication<RestServiceApplication>(*args)
+    val applicationRunner = context.getBean(NiiasProperties::class.java)
+    applicationRunner.addFirstElement()
 }
