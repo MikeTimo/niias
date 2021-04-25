@@ -20,17 +20,18 @@ class NiiasProperties {
      @Autowired
      lateinit var scheduleService: ScheduleService
 
-     var trainNumber: Int
-     var driverNumber: Int
-     var departureStation: Int
+     var trainNumber: String
+     var driverNumber: String
+     var departureStation: String
      var departureTime: LocalDateTime
-     var arrivalStation: Int
+     var arrivalStation: String
      var arrivalTime: LocalDateTime
 
      val schedule = Schedule(
-          trainNumber, driverNumber,
-          departureStation, departureTime!!, arrivalStation, arrivalTime!!
+          trainNumber.toInt(), driverNumber.toInt(),
+          departureStation.toInt(), departureTime, arrivalStation.toInt(), arrivalTime
      )
+
 
      fun addFirstElement() {
           scheduleService.scheduleMap[trainNumber.toInt()] = schedule
