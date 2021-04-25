@@ -1,31 +1,23 @@
-package com.example.restservice.config
-
 import com.example.restservice.model.Schedule
 import com.example.restservice.service.ScheduleService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
 import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZoneOffset.UTC
 
 @Component
 @ConfigurationProperties(prefix = "app.schedule")
 @Validated
-class NiiasProperties {
+class NiiasProperties(
+     val trainNumber: String, val driverNumber: String,
+     val departureStation: String, val departureTime: LocalDateTime,
+     val arrivalStation: String, val arrivalTime: LocalDateTime
+) {
 
      @Autowired
      lateinit var scheduleService: ScheduleService
 
-     var trainNumber: String
-     var driverNumber: String
-     var departureStation: String
-     var departureTime: LocalDateTime
-     var arrivalStation: String
-     var arrivalTime: LocalDateTime
 
      val schedule = Schedule(
           trainNumber.toInt(), driverNumber.toInt(),
