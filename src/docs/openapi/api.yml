@@ -52,26 +52,26 @@ components:
           type: integer
           format: int64
 
-        schedule trainnumber:
+        schedule trainNumber:
           type: integer
           format: int64
 
-        schedule drivernumber:
+        schedule driverNumber:
           type: integer
           format: int64
 
-        schedule stationfrom:
+        schedule departureStation:
           type: integer
           format: int64
 
-        schedule timefrom:
+        schedule departureTime:
           type: string
           format: 'date-time'
 
-        schedule stationto:
+        schedule arrivalStation:
           type: integer
           format: int64
 
-        schedule timeto:
+        schedule arrivalTime:
           type: string
           format: 'date-time'
