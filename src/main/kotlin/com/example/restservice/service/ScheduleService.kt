@@ -3,7 +3,6 @@ package com.example.restservice.service
 import com.example.restservice.model.Schedule
 import org.springframework.stereotype.Component
 import java.time.LocalDate
-import java.time.LocalTime
 import java.util.concurrent.ConcurrentHashMap
 
 @Component

@@ -1,7 +1,8 @@
 package com.example.restservice.controller
 
-import com.example.restservice.model.Schedule
 import com.example.restservice.service.ScheduleService
+import com.example.restservice.model.Schedule
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
@@ -9,7 +10,8 @@ import java.time.LocalDate
 @RestController
 class Controller {
 
-    private lateinit var scheduleService: ScheduleService
+    @Autowired
+    lateinit var scheduleService: ScheduleService
 
     @GetMapping("/schedule")
     fun get(
