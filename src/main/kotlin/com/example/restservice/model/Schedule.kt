@@ -6,7 +6,7 @@ data class Schedule(
     val trainNumber: Int,
     val driverNumber: Int,
     val departureStation: Int,
-    val departureTime: LocalDateTime,
+    var departureTime: LocalDateTime,
     val arrivalStation: Int,
-    val arrivalTime: LocalDateTime
+    var arrivalTime: LocalDateTime
 )
