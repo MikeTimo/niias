@@ -1,6 +1,5 @@
 import com.example.restservice.model.Schedule
 import com.example.restservice.service.ScheduleService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
@@ -15,15 +14,12 @@ class NiiasProperties(
      val arrivalStation: String, val arrivalTime: LocalDateTime
 ) {
 
-     @Autowired
      lateinit var scheduleService: ScheduleService
-
 
      val schedule = Schedule(
           trainNumber.toInt(), driverNumber.toInt(),
           departureStation.toInt(), departureTime, arrivalStation.toInt(), arrivalTime
      )
-
 
      fun addFirstElement() {
           scheduleService.scheduleMap[trainNumber.toInt()] = schedule
