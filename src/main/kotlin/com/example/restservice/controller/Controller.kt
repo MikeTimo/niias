@@ -3,6 +3,7 @@ package com.example.restservice.controller
 import com.example.restservice.service.ScheduleService
 import com.example.restservice.model.Schedule
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
@@ -15,7 +16,7 @@ class Controller {
 
     @GetMapping("/schedule")
     fun get(
-        @RequestParam(value = "data") data: LocalDate,
+        @RequestParam(value = "data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) data: LocalDate,
         @RequestParam(value = "trainNumber") trainNumber: Int
     ): Schedule? {
         return scheduleService.getSchedule(trainNumber, data)
