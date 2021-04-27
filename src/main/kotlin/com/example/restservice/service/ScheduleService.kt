@@ -14,11 +14,11 @@ class ScheduleService {
     fun getSchedule(trainNumber: Int, data: LocalDate): Schedule? {
         val dataTimeNow = data.atTime(LocalTime.now())
         var schedule = scheduleMap[trainNumber]
-        if (schedule?.departureTime != dataTimeNow) {
-            schedule?.departureTime = dataTimeNow
-            schedule?.arrivalTime = dataTimeNow.plusHours(1).plusMinutes(30)
-            scheduleMap[trainNumber] = schedule!!
-        }
+//        if (schedule?.departureTime != dataTimeNow) {
+//            schedule?.departureTime = dataTimeNow
+//            schedule?.arrivalTime = dataTimeNow.plusHours(1).plusMinutes(30)
+//            scheduleMap[trainNumber] = schedule!!
+//        }
         return schedule
     }
 
