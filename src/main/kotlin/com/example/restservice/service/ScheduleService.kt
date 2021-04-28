@@ -4,6 +4,7 @@ import com.example.restservice.model.Schedule
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
@@ -13,12 +14,14 @@ class ScheduleService {
     @Synchronized
     fun getSchedule(trainNumber: Int, data: LocalDate): Schedule? {
         val dataTimeNow = data.atTime(LocalTime.now())
+        val zone = dataTimeNow.atZone(ZoneId.systemDefault())
+        val dataTime = zone.toLocalDateTime()
         var schedule = scheduleMap[trainNumber]
-//        if (schedule?.departureTime != dataTimeNow) {
-//            schedule?.departureTime = dataTimeNow
-//            schedule?.arrivalTime = dataTimeNow.plusHours(1).plusMinutes(30)
-//            scheduleMap[trainNumber] = schedule!!
-//        }
+        if (schedule?.departureTime != dataTime) {
+            schedule?.departureTime = dataTime
+            schedule?.arrivalTime = dataTime.plusHours(1).plusMinutes(30)
+            scheduleMap[trainNumber] = schedule!!
+        }
         return schedule
     }
 
