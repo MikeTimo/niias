@@ -3,7 +3,8 @@ package com.example.restservice.utils
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
 
-class Helper {
+
+class Helper() {
     fun getSchedule(trainNumber: Int) : ScheduleTest? {
         var scheduleMap: MutableMap<Int, ScheduleTest> = ConcurrentHashMap()
 

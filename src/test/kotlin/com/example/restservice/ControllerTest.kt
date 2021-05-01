@@ -1,13 +1,13 @@
 package com.example.restservice
 
 import com.example.restservice.controller.Controller
+import com.example.restservice.model.Schedule
 import com.example.restservice.service.ScheduleService
 import com.example.restservice.utils.Helper
 import com.example.restservice.utils.ScheduleTest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
 
 import org.junit.runner.RunWith
@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
-import java.util.concurrent.ConcurrentHashMap
 
 
 @RunWith(SpringRunner::class)
@@ -37,8 +36,26 @@ internal class ControllerTest {
     @MockBean
     lateinit var scheduleService: ScheduleService
 
+    @Before
+    fun addFirstElement() {
+        val departureTime: LocalDateTime = LocalDateTime.now()
+        val arrivalTime = departureTime.plusHours(1).plusMinutes(30)
+
+        val schedule = Schedule(
+            1, 1,
+            4, departureTime, 10, arrivalTime
+        )
+
+        scheduleService.saveSchedule(schedule)
+
+        println(scheduleService.scheduleMap.size)
+    }
+
     @Test
     fun get() {
+        val helper = Helper()
+        val expected = helper.getSchedule(1)
+
         val mvcResult =
             mockMvc.perform(MockMvcRequestBuilders.get("/schedule?data=2010-04-21&trainNumber=1").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk).andReturn()
 
@@ -49,12 +66,7 @@ internal class ControllerTest {
         assertEquals("Неверный статус ответа", HttpStatus.OK.value(), status);
 
         val objectMapper: ObjectMapper = ObjectMapper()
-
         val actual = objectMapper.readValue(contentAsString, ScheduleTest::class.java)
-
-        val helper = Helper()
-
-        val expected = helper.getSchedule(1)
 
         assertEquals("Возвращается неправильный результат при запросе GET /schedule с параметрами trainNumber и data.", expected, actual)
     }
