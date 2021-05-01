@@ -2,7 +2,7 @@ app:
  server:
   port: 8080
  schedule:
-  trainNumber: 100
+  trainNumber: 1
   driverNumber: 4
   departureStation: 1
   departureTime: 2021-04-25 13:03:27
