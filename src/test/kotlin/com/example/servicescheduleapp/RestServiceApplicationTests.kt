@@ -1,4 +1,4 @@
-package com.example.restservice
+package com.example.servicescheduleapp
 
 import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith

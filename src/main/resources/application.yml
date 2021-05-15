@@ -2,11 +2,21 @@ app:
  server:
   port: 8080
  schedule:
+  codOfTechnicalOperationWithTrains: 1
   trainNumber: 1
+  trainIndex: 5047
+  countTrainOnLine: 5
+  sequentialNumberOfBrigade: 101
   driverNumber: 4
-  departureStation: 1
+  codeOfDepartureStation: 1
+  codeOfDepartureStationWithBrigade: 1
   departureTime: 2021-04-25 13:03:27
-  arrivalStation: 5
+  departureTimeWithBrigade: 2021-04-25 12:40:27
+  codeOfArrivalStation: 5
+  codeOfArrivalStationWithBrigade: 5
   arrivalTime: 2021-04-25 14:33:27
+  arrivalTimeWithBrigade: 2021-04-25 15:30:00
+  codeOfHeadWagon: "56"
+
 
 

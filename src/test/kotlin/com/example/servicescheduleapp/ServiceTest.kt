@@ -1,8 +1,8 @@
-package com.example.restservice
+package com.example.servicescheduleapp
 
+import com.example.servicescheduleapp.service.ScheduleService
 import org.junit.Assert.*
-import com.example.restservice.model.Schedule
-import com.example.restservice.service.ScheduleService
+import com.example.servicescheduleapp.model.Schedule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +21,10 @@ class ServiceTest {
     fun getSchedule() {
         val departureTime = LocalDateTime.now()
         val arrivalTime = departureTime.plusHours(1).plusMinutes(30)
-        val schedule = Schedule(1, 5, 5, departureTime, 10, arrivalTime)
+        val schedule = Schedule(1, 5, 5, 5,
+            101, 65, 1, 1,
+            departureTime, departureTime.minusHours(1), 5, 5,
+            arrivalTime, arrivalTime.plusMinutes(30), "54")
 
         scheduleService.scheduleMap[schedule.trainNumber] = schedule
 
@@ -38,7 +41,10 @@ class ServiceTest {
     fun saveSchedule() {
         val departureTime = LocalDateTime.now()
         val arrivalTime = departureTime.plusHours(1).plusMinutes(30)
-        val schedule = Schedule(1, 5, 5, departureTime, 10, arrivalTime)
+        val schedule = Schedule(1, 5, 5, 5,
+            101, 65, 1, 1,
+            departureTime, departureTime.minusHours(1), 5, 5,
+            arrivalTime, arrivalTime.plusMinutes(30), "54")
 
         scheduleService.scheduleMap[schedule.trainNumber] = schedule
 

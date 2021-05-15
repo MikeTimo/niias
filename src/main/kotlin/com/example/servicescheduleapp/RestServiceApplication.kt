@@ -1,4 +1,4 @@
-package com.example.restservice
+package com.example.servicescheduleapp
 
 import NiiasProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
