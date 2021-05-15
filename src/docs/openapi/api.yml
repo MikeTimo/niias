@@ -14,6 +14,13 @@ paths:
           schema:
             type: object
             default: false
+        - name: trainNumber
+          in: query
+          description: Номер поезда
+          required: true
+          schema:
+            type: integer
+            default: false
       responses:
         200:
           description: Successful response
@@ -21,7 +28,7 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/schedule'
+                  $ref: '#/components/schemas/Schedule'
 
     post:
       summary: 'Добавляет объект "Расписание"'
@@ -31,7 +38,7 @@ paths:
           application/json:
             schema:
               items:
-                $ref: '#/components/schemas/schedule'
+                $ref: '#/components/schemas/Schedule'
 
       responses:
         200:
@@ -42,36 +49,121 @@ paths:
                 type: string
                 example: OK
 
+  /schedule/list:
+    get:
+      summary: "Возвращает список расписаний"
+      parameters:
+        - name: startDataTime
+          in: query
+          description: Начало промежутка поиска расписания
+          required: true
+          schema:
+            type: object
+            default: false
+        - name: endDataTime
+          in: query
+          description: Конец промежутка поиска расписания
+          required: false
+          schema:
+            type: object
+            default: false
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ScheduleList'
+
+
+
 components:
   schemas:
-    schedule:
+    CodsOfTechnicalOperationWithTrains:
+      description: Список операций с составом
+      type: string
+      enum:
+        - 1 - TRAINSERVICE
+        - 2 - WASHING
+        - 3 - DRYCLEANING
+        - 4 - BASICCLEANING
+        - 5 - EQUIPMENT
+        - 6 - WASHINGANDDRYCLEANING
+        - 7 - EQUIPMENTANDBASICCLEANING
+        - 8 - MAINTENANCE2
+        - 9 - MAINTENANCE3
+        - 10 - ENGINEERINGWORKS
+
+    ScheduleList:
+      description: Список расписаний
+      type: array
+      items:
+        $ref: '#/components/schemas/Schedule'
+
+    Schedule:
       description: Объект "Расписание"
       type: object
       properties:
         id:
           type: integer
-          format: int64
+          format: int32
 
-        schedule trainNumber:
+        codOfTechnicalOperationWithTrains:
+          type: integer
+          format: int32
+
+        trainNumber:
+          type: integer
+          format: int32
+
+        trainIndex:
+          type: integer
+          format: int32
+
+        countTrainOnLine:
+          type: integer
+          format: int32
+
+        sequentialNumberOfBrigade:
+          type: integer
+          format: int32
+
+        driverNumber:
           type: integer
           format: int64
 
-        schedule driverNumber:
+        codeOfDepartureStation:
           type: integer
           format: int64
 
-        schedule departureStation:
+        codeOfDepartureStationWithBrigade:
           type: integer
           format: int64
 
-        schedule departureTime:
+        departureTime:
           type: string
           format: 'date-time'
 
-        schedule arrivalStation:
-          type: integer
-          format: int64
-
-        schedule arrivalTime:
+        departureTimeWithBrigade:
           type: string
           format: 'date-time'
+
+        codeOfArrivalStation:
+          type: integer
+          format: int32
+
+        codeOfArrivalStationWithBrigade:
+          type: integer
+          format: int32
+
+        arrivalTime:
+          type: string
+          format: 'date-time'
+
+        arrivalTimeWithBrigade:
+          type: string
+          format: 'date-time'
+
+        codeOfHeadWagon:
+          type: string
