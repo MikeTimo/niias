@@ -1,7 +1,7 @@
 package com.example.servicescheduleapp.controller
 
 import com.example.servicescheduleapp.service.ScheduleService
-import com.example.servicescheduleapp.model.Schedule
+import com.example.servicescheduleapp.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
@@ -10,7 +10,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RestController
-class Controller {
+class ScheduleController {
 
     @Autowired
     lateinit var scheduleService: ScheduleService

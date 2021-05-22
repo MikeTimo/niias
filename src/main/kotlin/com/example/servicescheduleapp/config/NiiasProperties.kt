@@ -36,7 +36,7 @@ data class NiiasProperties(
           arrivalTimeParse, arrivalTimeWithBrigadeParse, codeOfHeadWagon
      )
 
-     fun addFirstElement() {
+     fun addFirstSchedule() {
           scheduleService.scheduleMap[trainNumber.toInt()] = schedule
      }
 }
