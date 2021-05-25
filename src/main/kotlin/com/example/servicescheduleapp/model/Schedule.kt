@@ -8,7 +8,7 @@ data class Schedule(
     val trainIndex: Int,
     val countTrainOnLine: Int,
     val sequentialNumberOfBrigade: Int,
-    val driverNumber: Long,
+    val driverNumber: Int,
     val codeOfDepartureStation: Int,
     val codeOfDepartureStationWithBrigade: Int,
     var departureTime: LocalDateTime,

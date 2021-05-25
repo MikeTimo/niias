@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RestController
@@ -16,11 +15,10 @@ class ScheduleController {
     lateinit var scheduleService: ScheduleService
 
     @GetMapping("/schedule")
-    fun getSchedule(
-        @RequestParam(value = "data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) data: LocalDate,
+    fun getTrainSchedule(
         @RequestParam(value = "trainNumber") trainNumber: Int
-    ): Schedule? {
-        return scheduleService.getSchedule(trainNumber, data)
+    ): List<Schedule>? {
+        return scheduleService.getSchedule(trainNumber)
     }
 
     @GetMapping("/schedule/list")

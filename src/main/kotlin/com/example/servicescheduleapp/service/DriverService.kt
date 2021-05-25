@@ -1,8 +1,10 @@
 package com.example.servicescheduleapp.service
 
 import com.example.servicescheduleapp.model.Driver
+import org.springframework.stereotype.Service
 import java.util.concurrent.ConcurrentHashMap
 
+@Service
 class DriverService {
     var driverMap: MutableMap<Int, Driver> = ConcurrentHashMap()
 

@@ -4,42 +4,36 @@ import com.example.servicescheduleapp.model.Schedule
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class ScheduleService {
-    var scheduleMap: MutableMap<Int, Schedule> = ConcurrentHashMap()
+    var scheduleMap: MutableMap<Int, MutableList<Schedule>> = ConcurrentHashMap()
 
     @Synchronized
-    fun getSchedule(trainNumber: Int, data: LocalDate): Schedule? {
-        val dataTimeNow = data.atTime(LocalTime.now())
-        val zone = dataTimeNow.atZone(ZoneId.systemDefault())
-        val dataTime = zone.toLocalDateTime()
-        var schedule = scheduleMap[trainNumber]
-        if (schedule?.departureTime != dataTime) {
-            schedule?.departureTime = dataTime
-            schedule?.arrivalTime = dataTime.plusHours(1).plusMinutes(30)
-            scheduleMap[trainNumber] = schedule!!
+    fun getSchedule(trainNumber: Int): List<Schedule>? {
+        val scheduleList: List<Schedule> = return if (scheduleMap.containsKey(trainNumber)) {
+            scheduleMap[trainNumber]!!
+        } else {
+            null
         }
-        return schedule
     }
 
     @Synchronized
     fun getSchedules(startDataTime: LocalDateTime, endDataTime: LocalDateTime): List<Schedule> {
-        val startScheduleTime = startDataTime
         val endScheduleTime = endDataTime ?: LocalDate.now().atTime(23, 59, 59)
         val listWithTrueSchedule: MutableList<Schedule> = ArrayList()
-        for (schedule in scheduleMap) {
-            if (schedule.value.departureTime.isAfter(startScheduleTime)&&schedule.value.departureTime.isBefore(endScheduleTime)) {
-                listWithTrueSchedule.add(schedule.value)
-            }
-            if (schedule.value.arrivalTime.isAfter(startScheduleTime)&&schedule.value.arrivalTime.isBefore(endScheduleTime)) {
-                listWithTrueSchedule.add(schedule.value)
-            }
-            if (schedule.value.arrivalTime.isBefore(startScheduleTime)&&schedule.value.departureTime.isAfter(endScheduleTime)) {
-                listWithTrueSchedule.add(schedule.value)
+        for ((key, value) in scheduleMap) {
+            for (schedule in value) {
+                if (schedule.departureTime.isAfter(startDataTime) && schedule.departureTime.isBefore(endScheduleTime)) {
+                    listWithTrueSchedule.add(schedule)
+                }
+                if (schedule.arrivalTime.isAfter(startDataTime) && schedule.arrivalTime.isBefore(endScheduleTime)) {
+                    listWithTrueSchedule.add(schedule)
+                }
+                if (schedule.arrivalTime.isBefore(startDataTime) && schedule.departureTime.isAfter(endScheduleTime)) {
+                    listWithTrueSchedule.add(schedule)
+                }
             }
         }
         return listWithTrueSchedule
@@ -47,6 +41,14 @@ class ScheduleService {
 
     @Synchronized
     fun saveSchedule(schedule: Schedule) {
-        scheduleMap[schedule.trainNumber] = schedule
+        var scheduleList: MutableList<Schedule> = ArrayList()
+        if (scheduleMap.containsKey(schedule.trainNumber)) {
+            scheduleList = scheduleMap[schedule.trainNumber]!!
+            scheduleList.add(schedule)
+            scheduleMap[schedule.trainNumber] = scheduleList
+        } else {
+            scheduleList.add(schedule)
+            scheduleMap[schedule.trainNumber] = scheduleList
+        }
     }
 }

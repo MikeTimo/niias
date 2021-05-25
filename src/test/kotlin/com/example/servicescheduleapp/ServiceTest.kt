@@ -31,7 +31,7 @@ class ServiceTest {
         // Только время отправки состава попадает в интервал
         val departureTime2 = LocalDateTime.of(2020, 2, 3, 10, 0, 0)
         val arrivalTime2 = LocalDateTime.of(2020, 2, 3, 14, 0, 0)
-        val schedule2 = Schedule(4, 8, 9, 10,
+        val schedule2 = Schedule(4, 5, 9, 10,
             101, 65, 1, 1,
             departureTime2, departureTime2.minusHours(1).withNano(0), 5, 5,
             arrivalTime2, arrivalTime2.plusMinutes(30).withNano(0), "54")
@@ -39,7 +39,7 @@ class ServiceTest {
         // Только время прибытия попадает в интервал
         val departureTime3 = LocalDateTime.of(2020, 2, 3, 7, 0, 0)
         val arrivalTime3 = LocalDateTime.of(2020, 2, 3, 11, 0, 0)
-        val schedule3 = Schedule(4, 10, 9, 10,
+        val schedule3 = Schedule(4, 5, 9, 10,
             101, 65, 1, 1,
             departureTime3, departureTime3.minusHours(1).withNano(0), 5, 5,
             arrivalTime3, arrivalTime3.plusMinutes(30).withNano(0), "54")
@@ -47,7 +47,7 @@ class ServiceTest {
         // Время отправки раньше страта интервала, время прибытия позже конца интервала
         val departureTime4 = LocalDateTime.of(2020, 2, 3, 8, 0, 0)
         val arrivalTime4 = LocalDateTime.of(2020, 2, 3, 15, 0, 0)
-        val schedule4 = Schedule(4, 1, 9, 10,
+        val schedule4 = Schedule(4, 5, 9, 10,
             101, 65, 1, 1,
             departureTime4, departureTime4.minusHours(1).withNano(0), 5, 5,
             arrivalTime4, arrivalTime4.plusMinutes(30).withNano(0), "54")
@@ -55,20 +55,17 @@ class ServiceTest {
         // Время отправки и прибытия не попадает в интервал
         val departureTime5 = LocalDateTime.of(2020, 2, 3, 5, 0, 0)
         val arrivalTime5 = LocalDateTime.of(2020, 2, 3, 6, 0, 0)
-        val schedule5 = Schedule(4, 6, 9, 10,
+        val schedule5 = Schedule(4, 5, 9, 10,
             101, 65, 1, 1,
             departureTime5, departureTime5.minusHours(1).withNano(0), 5, 5,
             arrivalTime5, arrivalTime5.plusMinutes(30).withNano(0), "54")
 
-        scheduleService.scheduleMap[schedule.trainNumber] = schedule
-        scheduleService.scheduleMap[schedule2.trainNumber] = schedule2
-        scheduleService.scheduleMap[schedule3.trainNumber] = schedule3
-        scheduleService.scheduleMap[schedule4.trainNumber] = schedule4
-        scheduleService.scheduleMap[schedule5.trainNumber] = schedule5
+        val list: MutableList<Schedule> = mutableListOf(schedule, schedule2, schedule3, schedule4, schedule5)
+        scheduleService.scheduleMap[schedule.trainNumber] = list
     }
 
     @Test
-    fun getSchedule() {
+    fun getTrainSchedule() {
         val departureTime = LocalDateTime.of(2020, 2, 3, 10, 0, 0)
         val arrivalTime = LocalDateTime.of(2020, 2, 3, 11, 0, 0)
         val schedule = Schedule(1, 5, 5, 5,
@@ -76,11 +73,40 @@ class ServiceTest {
             departureTime, departureTime.minusHours(1).withNano(0), 5, 5,
             arrivalTime, arrivalTime.plusMinutes(30).withNano(0), "54")
 
-        val numberGetTrain = 5
-        val getSchedule = scheduleService.scheduleMap[numberGetTrain]
+        val departureTime2 = LocalDateTime.of(2020, 2, 3, 10, 0, 0)
+        val arrivalTime2 = LocalDateTime.of(2020, 2, 3, 14, 0, 0)
+        val schedule2 = Schedule(4, 5, 9, 10,
+            101, 65, 1, 1,
+            departureTime2, departureTime2.minusHours(1).withNano(0), 5, 5,
+            arrivalTime2, arrivalTime2.plusMinutes(30).withNano(0), "54")
 
-        assertNotNull(getSchedule)
-        assertEquals(schedule, getSchedule)
+        val departureTime3 = LocalDateTime.of(2020, 2, 3, 7, 0, 0)
+        val arrivalTime3 = LocalDateTime.of(2020, 2, 3, 11, 0, 0)
+        val schedule3 = Schedule(4, 5, 9, 10,
+            101, 65, 1, 1,
+            departureTime3, departureTime3.minusHours(1).withNano(0), 5, 5,
+            arrivalTime3, arrivalTime3.plusMinutes(30).withNano(0), "54")
+
+        val departureTime4 = LocalDateTime.of(2020, 2, 3, 8, 0, 0)
+        val arrivalTime4 = LocalDateTime.of(2020, 2, 3, 15, 0, 0)
+        val schedule4 = Schedule(4, 5, 9, 10,
+            101, 65, 1, 1,
+            departureTime4, departureTime4.minusHours(1).withNano(0), 5, 5,
+            arrivalTime4, arrivalTime4.plusMinutes(30).withNano(0), "54")
+
+        val departureTime5 = LocalDateTime.of(2020, 2, 3, 5, 0, 0)
+        val arrivalTime5 = LocalDateTime.of(2020, 2, 3, 6, 0, 0)
+        val schedule5 = Schedule(4, 5, 9, 10,
+            101, 65, 1, 1,
+            departureTime5, departureTime5.minusHours(1).withNano(0), 5, 5,
+            arrivalTime5, arrivalTime5.plusMinutes(30).withNano(0), "54")
+
+        val expectedList: MutableList<Schedule> = mutableListOf(schedule, schedule2, schedule3, schedule4, schedule5)
+        val numberGetTrain = 5
+        val actualSchedules = scheduleService.scheduleMap[numberGetTrain]
+
+        assertNotNull(actualSchedules)
+        assertEquals(expectedList, actualSchedules)
     }
 
     @Test
@@ -110,7 +136,8 @@ class ServiceTest {
     @Test
     fun saveSchedule() {
         val expectedListSize = 5
-        val actualListSize = scheduleService.scheduleMap.size
+        val scheduleList = scheduleService.scheduleMap[5]
+        val actualListSize = scheduleList!!.size
 
         assertEquals(expectedListSize, actualListSize)
     }

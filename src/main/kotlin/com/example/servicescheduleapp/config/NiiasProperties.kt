@@ -30,13 +30,13 @@ data class NiiasProperties(
 
      val schedule = Schedule(
           codOfTechnicalOperationWithTrains.toInt(), trainNumber.toInt(), trainIndex.toInt(),
-          countTrainOnLine.toInt(), sequentialNumberOfBrigade.toInt(), driverNumber.toLong(),
+          countTrainOnLine.toInt(), sequentialNumberOfBrigade.toInt(), driverNumber.toInt(),
           codeOfDepartureStation.toInt(), codeOfDepartureStationWithBrigade.toInt(), departureTimeParse,
           departureTimeWithBrigadeParse, codeOfArrivalStation.toInt(), codeOfArrivalStationWithBrigade.toInt(),
           arrivalTimeParse, arrivalTimeWithBrigadeParse, codeOfHeadWagon
      )
 
      fun addFirstSchedule() {
-          scheduleService.scheduleMap[trainNumber.toInt()] = schedule
+          scheduleService.scheduleMap[trainNumber.toInt()] = mutableListOf(schedule)
      }
 }
