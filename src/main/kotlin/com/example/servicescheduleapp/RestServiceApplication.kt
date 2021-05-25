@@ -12,7 +12,7 @@ class RestServiceApplication
 
 fun main(args: Array<String>) {
     val context =  runApplication<RestServiceApplication>(*args)
-    val start = context.getBean(BasicConfig::class.java)
+    val start = context.getBean("basicConfigBean", BasicConfig::class.java)
     start.addDriversInList()
     start.addAllSchedulesInList()
 }
