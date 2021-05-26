@@ -5,12 +5,12 @@ info:
 paths:
   /schedule:
     get:
-      summary: 'Возвращает объект "Расписание"'
+      summary: 'Возвращает список "Расписание" определенного поезда'
       parameters:
         - name: data
           in: query
           description: Дата расписания
-          required: true
+          required: false
           schema:
             type: object
             default: false
@@ -28,10 +28,10 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/Schedule'
+                  $ref: '#/components/schemas/ScheduleList'
 
     post:
-      summary: 'Добавляет объект "Расписание"'
+      summary: 'Добавляет объект "Расписание" в список расписаний'
       requestBody:
         required: true
         content:
@@ -51,7 +51,7 @@ paths:
 
   /schedule/list:
     get:
-      summary: "Возвращает список расписаний"
+      summary: "Возвращает список расписаний соответсвующих временному промежутку"
       parameters:
         - name: startDataTime
           in: query
@@ -76,7 +76,27 @@ paths:
                 items:
                   $ref: '#/components/schemas/ScheduleList'
 
+  /drivers:
+    get:
+      summary: "Возвращает список машинистов"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                items: '#/components/schemas/DriverList'
 
+  /drivers/available:
+    get:
+      summary: "Возвращаеит список свободных машинистов"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                items: '#/components/schemas/DriverList'
 
 components:
   schemas:
@@ -131,15 +151,15 @@ components:
 
         driverNumber:
           type: integer
-          format: int64
+          format: int32
 
         codeOfDepartureStation:
           type: integer
-          format: int64
+          format: int32
 
         codeOfDepartureStationWithBrigade:
           type: integer
-          format: int64
+          format: int32
 
         departureTime:
           type: string
@@ -167,3 +187,48 @@ components:
 
         codeOfHeadWagon:
           type: string
+
+    DriverList:
+      description: Список "Машинистов"
+      type: array
+      items:
+        $ref: '#/components/schemas/Driver'
+
+    Driver:
+      description: Объект "Машинист"
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+
+        number:
+          type: integer
+          format: int32
+
+        firstName:
+          type: string
+
+        middleName:
+          type: string
+
+        lastName:
+          type: string
+
+        isAvailable:
+          type: boolean
+
+    RollingStock:
+      description: Объект "Подвижной состав"
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+
+        model:
+          type: string
+
+        number:
+          type: integer
+          format: int32
