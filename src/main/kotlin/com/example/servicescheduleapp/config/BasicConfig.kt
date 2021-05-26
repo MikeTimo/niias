@@ -7,7 +7,6 @@ import com.example.servicescheduleapp.service.DriverService
 import com.example.servicescheduleapp.service.ScheduleService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -65,6 +64,5 @@ class BasicConfig {
 
         scheduleService.scheduleMap[rs113.number] = scheduleList
         println(scheduleList.size)
-
     }
 }
