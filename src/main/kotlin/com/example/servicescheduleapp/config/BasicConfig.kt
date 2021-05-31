@@ -26,8 +26,10 @@ class BasicConfig {
     private val driver3: Driver = Driver(0, 766, "Алеександр", "Сергеевич", "Кутепов", true)
     private val driver4: Driver = Driver(0, 65, "Петр", "Николаевич", "Иванов", true)
 
-    private val rs113: RollingStock = RollingStock(0, "ЭС2Г", 113)
-    private val rs136: RollingStock = RollingStock(0, "ЭС2Г", 136)
+    private val rs113: RollingStock = RollingStock(0, "ЭС2Г", 113, true)
+    private val rs136: RollingStock = RollingStock(0, "ЭС2Г", 136, true)
+
+    private val trains = arrayListOf<RollingStock>(rs113, rs136)
 
     fun addDriversInList() {
         driverService.driverMap[driver.number] = driver
@@ -37,17 +39,20 @@ class BasicConfig {
         driverService.driverMap[driver4.number] = driver4
     }
 
+    private var driverList = arrayListOf<Driver>(driver, driver1, driver2, driver3, driver4)
+
     fun addAllSchedulesInList() {
         var departureTimeParse: LocalDateTime = LocalDateTime.of(2021, 4, 20, 4, 0, 0)
         var arrivalTimeParse: LocalDateTime = LocalDateTime.of(2021, 4, 20, 5, 29, 0)
         var departureTimeWithBrigadeParse: LocalDateTime = departureTimeParse
         var arrivalTimeWithBrigadeParse: LocalDateTime = arrivalTimeParse
         val scheduleList: MutableList<Schedule> = ArrayList()
+        var runTrainNumber: Int = 8001
+        var driverNumber = getDriverNumber()
+
         for (i in 1..14) {
-            var driverNumber = driver.number
-            if (i > 8) driverNumber = driver1.number
             val schedule = Schedule(
-                1, rs113.number, 2213,
+                1, runTrainNumber, 2213,
                 10, 225, driverNumber,
                 1, 1, departureTimeParse,
                 departureTimeWithBrigadeParse, 1, 1,
@@ -60,9 +65,47 @@ class BasicConfig {
             arrivalTimeParse = arrivalTimeParse.plusHours(1).plusMinutes(29)
             departureTimeWithBrigadeParse = departureTimeParse
             arrivalTimeWithBrigadeParse = arrivalTimeParse
-        }
+            runTrainNumber += 2
 
-        scheduleService.scheduleMap[rs113.number] = scheduleList
-        println(scheduleList.size)
+            if (i == 7) {
+                val scheduleListForFirstShift: MutableList<Schedule> = ArrayList(scheduleList)
+                driverNumber = getDriverNumber()
+                val trainNumber = getTrainNumber()
+                scheduleService.scheduleMap[trainNumber] = scheduleListForFirstShift
+                createArraysOfSchedule(trainNumber, driverNumber, scheduleListForFirstShift)
+                scheduleList.removeAll(scheduleList)
+            }
+            if (i == 14) {
+                val trainNumber = getTrainNumber()
+                createArraysOfSchedule(trainNumber, driverNumber, scheduleList)
+                scheduleService.scheduleMap[trainNumber] = scheduleList
+            }
+        }
+    }
+
+    fun getDriverNumber(): Int {
+        val driver = driverList[(0 until driverList.size).random()]
+        var driverNumber = 0
+        if (driver.isAvailable) {
+            driverNumber = driver.number
+            driver.isAvailable = false
+        } else {
+            driverNumber = getDriverNumber()
+        }
+        return driverNumber
+    }
+
+    fun createArraysOfSchedule(trainNumber: Int, driverNumber: Int, scheduleList: MutableList<Schedule>) {}
+
+    fun getTrainNumber(): Int {
+        val train = trains[(0 until trains.size).random()]
+        var trainNumber = 0
+        if (train.isAvailable) {
+            train.isAvailable = false
+            trainNumber = train.number
+        } else {
+            trainNumber = getTrainNumber()
+        }
+        return trainNumber
     }
 }
