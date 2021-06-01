@@ -1,2 +1,30 @@
-app:
-  drivers:
+app-drivers:
+    drivers:
+        -
+            id: 1
+            number: 122
+            firstName: "Иван"
+            middleName: "Сергеевич"
+            lastName: "Иванов"
+            isAvailable: true
+        -
+            id: 2
+            number: 201
+            firstName: "Олег"
+            middleName: "Петрович"
+            lastName: "Сергеев"
+            isAvailable: true
+        -
+            id: 3
+            number: 546
+            firstName: "Андрей"
+            middleName: "Андреевич"
+            lastName: "Семенов"
+            isAvailable: true
+        -
+            id: 4
+            number: 99
+            firstName: "Петр"
+            middleName: "Олегович"
+            lastName: "Петров"
+            isAvailable: true
