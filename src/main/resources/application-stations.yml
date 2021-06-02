@@ -34,7 +34,3 @@ app-stations:
     - "Шоссе Энтузиастов"
     - "Андроновка Оп"
     - "Андроновка"
-  durationOfTrainStop: 60000
-  durationOfBlock: 120000
-  timeLap: 5340000
-  countOfLap: 14

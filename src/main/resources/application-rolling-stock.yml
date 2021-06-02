@@ -1,12 +1,10 @@
 app-rolling-stock:
   rollingStocks:
-    -
-      id: 1
+    - id: 1
       model: "ЭС2Г"
       number: 113
       isAvailable: true
-    -
-      id: 2
+    - id: 2
       model: "ЭС2Г"
       number: 136
       isAvailable: true

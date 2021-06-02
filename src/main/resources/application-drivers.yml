@@ -28,3 +28,10 @@ app-drivers:
             middleName: "Олегович"
             lastName: "Петров"
             isAvailable: true
+        -
+            id: 5
+            number: 101
+            firstName: "Алексей"
+            middleName: "Михайлович"
+            lastName: "Кругов"
+            isAvailable: true
