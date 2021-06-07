@@ -2,8 +2,10 @@ package com.example.servicescheduleapp.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.stereotype.Component
 
-@ConstructorBinding
+@Component
 @ConfigurationProperties(prefix = "app-stations")
-data class StationsProperties(val stations: List<String>, var durationOfTrainStop: String, val durationOfBlock: String, val timeLap: String,
-                              val countOfLap: String)
+class StationsProperties {
+    val stations: List<String> = ArrayList()
+}

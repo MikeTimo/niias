@@ -1,19 +1,35 @@
 package com.example.servicescheduleapp.config
 
 import com.example.servicescheduleapp.model.Schedule
-import com.example.servicescheduleapp.service.DriverService
 import com.example.servicescheduleapp.service.ScheduleService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding
+import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
-@Configuration("basicConfigBean")
+@Component("basicConfigBean")
 @ConfigurationProperties(prefix = "conf")
 class BasicConfig {
 
-    @Autowired
-    lateinit var driverService: DriverService
+    var codOfTechnicalOperationWithTrains: Int = 0
+    var trainNumber: Int = 0
+    var trainIndex: Int= 0
+    var countTrainOnLine: Int = 0
+    var sequentialNumberOfBrigade: Int = 0
+    var codeOfHeadWagon: String = ""
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")var startWorkOfRollingStock: LocalDateTime? = null
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")var endWorkOfRollingStock: LocalDateTime? = null
+    @DateTimeFormat(pattern = "HH:mm:ss") var longWorkShifts: LocalTime? = null
+    @DateTimeFormat(pattern = "HH:mm:ss") var durationOfTrainStop: LocalTime? = null
+    @DateTimeFormat(pattern = "HH:mm:ss") var durationOfBlock: LocalTime? = null
+    @DateTimeFormat(pattern = "HH:mm:ss") var timeLap: LocalTime? = null
+    var workShifts: List<WorkShift> = ArrayList()
 
     @Autowired
     lateinit var scheduleService: ScheduleService
@@ -22,78 +38,116 @@ class BasicConfig {
     lateinit var driversProperties: DriversProperties
 
     @Autowired
-    lateinit var stationsProperties: StationsProperties
-
-    @Autowired
     lateinit var rollingStockProperties: RollingStockProperties
 
-//    private val driver: Driver = Driver(1, 123, "Игорь", "Александрович", "Иванов", true)
-//    private val driver1: Driver = Driver(2, 125, "Михаил", "Васильевич", "Сергеев", true)
-//    private val driver2: Driver = Driver(3, 387, "Василий", "Никитич", "Смирнов", true)
-//    private val driver3: Driver = Driver(4, 766, "Алеександр", "Сергеевич", "Кутепов", true)
-//    private val driver4: Driver = Driver(5, 65, "Петр", "Николаевич", "Иванов", true)
+    private val workShiftOfDriver: MutableMap<Int, WorkShift> = HashMap()
 
-//    private val rs113: RollingStock = RollingStock(0, "ЭС2Г", 113, true)
-//    private val rs136: RollingStock = RollingStock(0, "ЭС2Г", 136, true)
-//
-//    private val trains = arrayListOf<RollingStock>(rs113, rs136)
+    private val timeAllLaps: MutableMap<LocalDateTime?, LocalDateTime> = TreeMap()
 
-//    fun addDriversInList() {
-//        driverService.driverMap[driver.number] = driver
-//        driverService.driverMap[driver1.number] = driver1
-//        driverService.driverMap[driver2.number] = driver2
-//        driverService.driverMap[driver3.number] = driver3
-//        driverService.driverMap[driver4.number] = driver4
-//    }
-
-//    private val driverList = arrayListOf<Driver>(driver, driver1, driver2, driver3, driver4)
-
-    fun addAllSchedulesInList() {
-        var departureTimeParse: LocalDateTime = LocalDateTime.of(2021, 4, 20, 4, 0, 0)
-        var arrivalTimeParse: LocalDateTime = LocalDateTime.of(2021, 4, 20, 5, 29, 0)
-        var departureTimeWithBrigadeParse: LocalDateTime = departureTimeParse
-        var arrivalTimeWithBrigadeParse: LocalDateTime = arrivalTimeParse
+    fun createScheduleOfDay() {
         val scheduleList: MutableList<Schedule> = ArrayList()
-        var runNumber = 8001
-        var driverNumber = driversProperties.getRandomDriverNumber()
+        getWorkShiftForDriver()
+        timeCalculator()
+        var previousDriverId = 0
+        for ((startTimeLap, endTimeLap) in timeAllLaps) {
+            var driverId = chooseDriver(startTimeLap, endTimeLap, previousDriverId)
+            scheduleList.add(createSchedule(codOfTechnicalOperationWithTrains, trainNumber, trainIndex, countTrainOnLine, sequentialNumberOfBrigade, driverId,
+                    startTimeLap, endTimeLap, codeOfHeadWagon))
+            trainNumber += 2
+            previousDriverId = driverId
+        }
+        scheduleService.scheduleMap[rollingStockProperties.getRandomTrainNumber()] = scheduleList
+    }
 
-        for (i in 1..14) {
-            val schedule = Schedule(
-                1, runNumber, 2213,
-                10, 225, driverNumber,
-                1, 1, departureTimeParse,
-                departureTimeWithBrigadeParse, 1, 1,
-                arrivalTimeParse, arrivalTimeWithBrigadeParse, "56"
-            )
+    private fun createSchedule(codOfTechnicalOperationWithTrains: Int, trainNumber: Int, trainIndex: Int,
+                               countTrainOnLine: Int, sequentialNumberOfBrigade: Int, driverId: Int, startTimeLap: LocalDateTime?,
+                               endTimeLap: LocalDateTime, codeOfHeadWagon: String): Schedule {
+        val schedule: Schedule
+        if (startTimeLap != null) {
+            schedule = Schedule(codOfTechnicalOperationWithTrains, trainNumber, trainIndex, countTrainOnLine,
+                    sequentialNumberOfBrigade, driverId, "Андроновка Оп", "Андроновка Оп",
+                    startTimeLap, startTimeLap, "Андроновка Оп", "Андроновка Оп", endTimeLap, endTimeLap, codeOfHeadWagon)
+        } else {
+            throw Exception()
+        }
+        return schedule
+    }
 
-            scheduleList.add(schedule)
-
-            departureTimeParse = arrivalTimeParse.plusMinutes(1)
-            arrivalTimeParse = arrivalTimeParse.plusHours(1).plusMinutes(29)
-            departureTimeWithBrigadeParse = departureTimeParse
-            arrivalTimeWithBrigadeParse = arrivalTimeParse
-
-            runNumber += 2
-
-            if (i == 7) {
-                val scheduleListForFirstShift: MutableList<Schedule> = ArrayList(scheduleList)
-                driverNumber = driversProperties.getRandomDriverNumber()
-                val trainNumber = rollingStockProperties.getRandomTrainNumber()
-                scheduleService.scheduleMap[trainNumber] = scheduleListForFirstShift
-                createArrayOfSchedule(trainNumber, driverNumber, scheduleListForFirstShift)
-                scheduleList.removeAll(scheduleList)
+    fun chooseDriver(startTimeLap: LocalDateTime?, endTimeLap: LocalDateTime?, previousDriverId: Int): Int {
+        if (startTimeLap != null && endTimeLap != null) {
+            var id = 0
+            if (previousDriverId != 0) {
+                if (checkTimeOfEndWorkOfDriver(workShiftOfDriver[previousDriverId]?.endWorkTime, endTimeLap)) {
+                    id = previousDriverId
+                } else {
+                    id = chooseDriver(startTimeLap, endTimeLap, 0)
+                }
+            } else {
+                for ((driverId, workShift) in workShiftOfDriver) {
+                    if (checkTimeOfStartWorkOfDriver(workShift.startWorkTime, startTimeLap) && checkTimeOfEndWorkOfDriver(workShift.endWorkTime, endTimeLap) && driversProperties.checkDriverIsAvailable(driverId)) {
+                        id = driverId
+                        driversProperties.updateIsAvailableOnFalse(driverId)
+                    }
+                }
             }
-            if (i == 14) {
-                val trainNumber = rollingStockProperties.getRandomTrainNumber()
-                createArrayOfSchedule(trainNumber, driverNumber, scheduleList)
-                scheduleService.scheduleMap[trainNumber] = scheduleList
-                createArrayOfSchedule(trainNumber, driverNumber, scheduleList)
+            return id
+        } else {
+            throw Exception("Failed choose driver")
+        }
+    }
+
+    fun checkTimeOfStartWorkOfDriver(startTimeOfWorkOfDriver: LocalDateTime?, startTimeLap: LocalDateTime?): Boolean {
+        if (startTimeOfWorkOfDriver != null && startTimeLap != null) {
+            return startTimeOfWorkOfDriver.isBefore(startTimeLap)
+        } else {
+            throw Exception("Failed check time in checkTimeOfStartWorkOfDriver")
+        }
+    }
+
+    fun checkTimeOfEndWorkOfDriver(endTimeOfWorkOfDriver: LocalDateTime?, endTimeLap: LocalDateTime?): Boolean {
+        if (endTimeOfWorkOfDriver != null && endTimeLap != null) {
+            return endTimeOfWorkOfDriver.isAfter(endTimeLap)
+        } else {
+            throw Exception("Failed check time in checkTimeOfEndWorkOfDriver")
+        }
+    }
+
+
+    private fun getWorkShiftForDriver() {
+        if (workShifts.isEmpty() || driversProperties.drivers.isEmpty()) throw Exception("Не хватает данных")
+        if (driversProperties.drivers.size == workShifts.size) {
+            for (element in driversProperties.drivers) {
+                workShiftOfDriver[element.id] = workShifts[(workShifts.indices).random()]
             }
         }
     }
 
-    fun createArrayOfSchedule(trainNumber: Int, driverNumber: Int, scheduleList: MutableList<Schedule>) {
-        val trainDriverScheduleList: MutableList<TrainDriverScheduleConfig> = ArrayList()
-        trainDriverScheduleList.add(TrainDriverScheduleConfig(trainNumber, driverNumber, scheduleList))
+    /*
+    Fill timeAllLaps
+     */
+    private fun timeCalculator() {
+        if (startWorkOfRollingStock != null) {
+            var startTimeLap = startWorkOfRollingStock
+            var endTimeOfLap = sumTime(startTimeLap, timeLap)
+            do {
+                timeAllLaps[startTimeLap] = endTimeOfLap
+                startTimeLap = endTimeOfLap
+                endTimeOfLap = sumTime(startTimeLap, timeLap)
+            } while (endTimeOfLap.isBefore(endWorkOfRollingStock))
+        }
+    }
+
+    fun sumTime(startTimeLap: LocalDateTime?, timeLap: LocalTime?): LocalDateTime {
+        if (startTimeLap != null && timeLap != null) {
+            return startTimeLap?.plusHours(timeLap.hour.toLong()).plusMinutes(timeLap.minute.toLong())
+        } else {
+            throw Exception()
+        }
+    }
+
+    @ConfigurationPropertiesBinding
+     class WorkShift() {
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") var startWorkTime: LocalDateTime? =null
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") var endWorkTime: LocalDateTime? =null
     }
 }

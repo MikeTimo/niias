@@ -2,22 +2,27 @@ package com.example.servicescheduleapp.config
 
 import com.example.servicescheduleapp.model.Driver
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.stereotype.Component
 
-@ConstructorBinding
+@Component
 @ConfigurationProperties(prefix = "app-drivers")
-data class DriversProperties(val drivers: List<Driver>) {
+class DriversProperties() {
+    val drivers: List<Driver> = ArrayList()
 
-    fun getRandomDriverNumber(): Int {
-        val driverList = drivers
-        var driver = driverList[(0 until driverList.size).random()]
-        var driverNumber = 0
-        if (driver.isAvailable) {
-            driverNumber = driver.number
-            driver.isAvailable = false
-        } else {
-            driverNumber = getRandomDriverNumber()
+    fun checkDriverIsAvailable(driverId: Int): Boolean {
+        var driverAvailable = false;
+        for (driver in drivers) {
+            if (driver.id == driverId && driver.isAvailable)
+                driverAvailable = true
         }
-        return driverNumber
+        return driverAvailable
+    }
+
+    fun updateIsAvailableOnFalse(driverId: Int) {
+        for (driver in drivers) {
+            if (driver.id == driverId) {
+                driver.isAvailable = false
+            }
+        }
     }
 }

@@ -2,15 +2,16 @@ package com.example.servicescheduleapp.config
 
 import com.example.servicescheduleapp.model.RollingStock
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.stereotype.Component
 
-@ConstructorBinding
+@Component
 @ConfigurationProperties(prefix = "app-rolling-stock")
-data class RollingStockProperties(val rollingStocks: List<RollingStock>) {
+class RollingStockProperties {
+    var rollingStocks: List<RollingStock> = ArrayList()
 
     fun getRandomTrainNumber(): Int{
         val trains = rollingStocks
-        val train = trains[(0 until trains.size).random()]
+        val train = trains[(trains.indices).random()]
         var trainNumber = 0
         if (train.isAvailable) {
             train.isAvailable = false
