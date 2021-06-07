@@ -18,7 +18,7 @@ class ScheduleController {
     fun getTrainSchedule(
         @RequestParam(value = "trainNumber") trainNumber: Int
     ): List<Schedule>? {
-        return scheduleService.getSchedule(trainNumber)
+        return scheduleService.getScheduleOnDayByTrain(trainNumber)
     }
 
     @GetMapping("/schedule/list")
@@ -27,15 +27,15 @@ class ScheduleController {
         @RequestParam(
             "endDataTime",
             required = false
-        ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) endDateTime: LocalDateTime
+        ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) endDateTime: LocalDateTime?
     ): List<Schedule> {
-        return scheduleService.getSchedules(startDateTime, endDateTime)
+        return scheduleService.getSchedulesBetweenTimePoint(startDateTime, endDateTime)
     }
 
     @PostMapping("/schedule")
     @ResponseStatus(HttpStatus.OK)
-    fun post(@RequestBody schedule: Schedule): String {
-        scheduleService.saveSchedule(schedule)
+    fun saveSchedule(@RequestParam(value = "trainNumber") trainNumber: Int, @RequestBody schedule: Schedule): String {
+        scheduleService.saveSchedule(trainNumber, schedule)
         return "OK"
     }
 }

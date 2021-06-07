@@ -12,7 +12,7 @@ class DriverService {
     fun getAvailableDrivers(): List<Driver> {
         val availableDrivers: MutableList<Driver> = ArrayList()
         for (driver in driverMap.values) {
-            if (driver.isAvailable) {
+            if (driver.isAvailable!!) {
                 availableDrivers.add(driver)
             }
         }
@@ -22,5 +22,25 @@ class DriverService {
     @Synchronized
     fun getAllDrivers(): List<Driver> {
         return ArrayList(driverMap.values)
+    }
+
+    @Synchronized
+    fun getDriverBiId(id: Int): Driver {
+        var driver: Driver
+        if (driverMap.containsKey(id) && driverMap[id] != null) {
+            driver = driverMap[id]!!
+        } else {
+            throw Exception()
+        }
+        return driver
+    }
+
+    @Synchronized
+    fun deleteDriverBiId(id: Int) {
+        if (driverMap.containsKey(id) && driverMap[id] != null) {
+            driverMap.remove(id)
+        } else {
+            throw Exception()
+        }
     }
 }

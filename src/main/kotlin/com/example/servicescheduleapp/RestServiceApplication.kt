@@ -14,7 +14,6 @@ class RestServiceApplication
 
 fun main(args: Array<String>) {
     val context =  runApplication<RestServiceApplication>(*args)
-    val basicConfig = context.getBean("basicConfigBean" ,BasicConfig::class.java)
-//    basicConfig.addDriversInList()
-    basicConfig.addAllSchedulesInList()
+    val basicConfig = context.getBean("basicConfigBean", BasicConfig::class.java)
+    basicConfig.createScheduleOfDay()
 }
