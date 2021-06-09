@@ -1,31 +1,105 @@
-conf:
- server:
-  port: 8080
- codOfTechnicalOperationWithTrains: 1
- trainNumber: 8001
- trainIndex: 72078001
- countTrainOnLine: 10
- sequentialNumberOfBrigade: 16
- codeOfHeadWagon: "956"
- startWorkOfRollingStock: 2021-05-30 04:00:00
- endWorkOfRollingStock: 2021-05-31 02:00:00
- longWorkShifts: "12:00:00"
- durationOfTrainStop: "00:01:00"
- durationOfBlock: "00:02:00"
- timeLap: "01:30:00"
- workShifts:
-  -
-   startWorkTime: 2021-05-30 03:00:00
-   endWorkTime: 2021-05-30 15:00:00
-  -
-   startWorkTime: 2021-05-30 03:00:00
-   endWorkTime: 2021-05-30 15:00:00
-  -
-   startWorkTime: 2021-05-30 14:00:00
-   endWorkTime: 2021-05-31 02:00:00
-  -
-   startWorkTime: 2021-05-30 14:00:00
-   endWorkTime: 2021-05-31 02:00:00
-  -
-   startWorkTime: 2021-05-30 08:00:00
-   endWorkTime: 2021-05-30 20:00:00
+app:
+  server:
+    port: 8080
+  codOfTechnicalOperationWithTrains: 1
+  trainNumberOuterCircle: 8001
+  trainNumberInnerCircle: 8000
+  trainIndex: 72078001
+  countTrainOnLine: 10
+  sequentialNumberOfBrigade: 16
+  codeOfHeadWagon: "956"
+  startWorkOfRollingStock: 2021-05-30 04:00:00
+  endWorkOfRollingStock: 2021-05-31 02:00:00
+  longWorkShifts: "12:00:00"
+  durationOfTrainStop: "00:01:00"
+  durationOfBlock: "00:02:00"
+  timeLap: "01:30:00"
+  workShifts:
+    - startWorkTime: 2021-05-30 03:00:00
+      endWorkTime: 2021-05-30 15:00:00
+    - startWorkTime: 2021-05-30 03:00:00
+      endWorkTime: 2021-05-30 15:00:00
+    - startWorkTime: 2021-05-30 14:00:00
+      endWorkTime: 2021-05-31 02:00:00
+    - startWorkTime: 2021-05-30 14:00:00
+      endWorkTime: 2021-05-31 02:00:00
+    - startWorkTime: 2021-05-30 14:00:00
+      endWorkTime: 2021-05-30 02:00:00
+
+  countUsedRollingStock: 2
+  rollingStocks:
+    - id: 1
+      model: "ЭС2Г"
+      number: 113
+      isAvailable: true
+    - id: 2
+      model: "ЭС2Г"
+      number: 136
+      isAvailable: true
+
+  drivers:
+    - id: 1
+      number: 122
+      firstName: "Иван"
+      middleName: "Сергеевич"
+      lastName: "Иванов"
+      isAvailable: true
+    - id: 2
+      number: 201
+      firstName: "Олег"
+      middleName: "Петрович"
+      lastName: "Сергеев"
+      isAvailable: true
+    - id: 3
+      number: 546
+      firstName: "Андрей"
+      middleName: "Андреевич"
+      lastName: "Семенов"
+      isAvailable: true
+    - id: 4
+      number: 99
+      firstName: "Петр"
+      middleName: "Олегович"
+      lastName: "Петров"
+      isAvailable: true
+    - id: 5
+      number: 101
+      firstName: "Алексей"
+      middleName: "Михайлович"
+      lastName: "Кругов"
+      isAvailable: true
+  stations:
+    - "Андроновка"
+    - "Андроновка Оп"
+    - "Нижегородская"
+    - "Новохохловская"
+    - "Угрешская"
+    - "Дубровка"
+    - "Автозаводская"
+    - "Зил"
+    - "Верхние котлы"
+    - "Крымская"
+    - "Площадь Гагарина"
+    - "Лужники"
+    - "Кутузовская"
+    - "Деловой центр"
+    - "Шелепиха"
+    - "Хорошёво"
+    - "Зорге"
+    - "Панфиловская"
+    - "Стрешнево"
+    - "Балтийская"
+    - "Коптево"
+    - "Лихоборы"
+    - "Окружная"
+    - "Владыкино"
+    - "Ботанический сад"
+    - "Ростокино"
+    - "Белокаменная"
+    - "Бульвар Рокоссовского"
+    - "Локомотив"
+    - "Измайлово"
+    - "Соколиная гора"
+    - "Шоссе Энтузиастов"
+    - "Андроновка Оп"
+    - "Андроновка"

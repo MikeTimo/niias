@@ -7,13 +7,6 @@ paths:
     get:
       summary: 'Возвращает список "Расписание" определенного поезда'
       parameters:
-        - name: data
-          in: query
-          description: Дата расписания
-          required: false
-          schema:
-            type: object
-            default: false
         - name: trainNumber
           in: query
           description: Номер поезда
@@ -32,6 +25,11 @@ paths:
 
     post:
       summary: 'Добавляет объект "Расписание" в список расписаний'
+      parameters:
+        - name: trainNumber
+          in: query
+          description: Номер поезда
+          required: true
       requestBody:
         required: true
         content:
@@ -85,7 +83,37 @@ paths:
           content:
             application/json:
               schema:
-                items: '#/components/schemas/DriverList'
+                items:
+                  $ref: '#/components/schemas/DriverList'
+
+  /drivers/{id}:
+    get:
+      summary: "Возвращает машиниста по id"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Driver'
+
+    delete:
+      summary: "Удаление машиниста по id"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successful response
+
 
   /drivers/available:
     get:
@@ -96,7 +124,8 @@ paths:
           content:
             application/json:
               schema:
-                items: '#/components/schemas/DriverList'
+                items:
+                  $ref: '#/components/schemas/DriverList'
 
 components:
   schemas:
