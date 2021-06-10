@@ -1,13 +1,22 @@
 package com.example.servicescheduleapp
 
+import com.example.servicescheduleapp.config.BasicConfig
+import com.example.servicescheduleapp.config.DriversProperties
+import com.example.servicescheduleapp.config.RollingStockProperties
+import com.example.servicescheduleapp.controller.ScheduleController
+import com.example.servicescheduleapp.exception.BadRequestException
+import com.example.servicescheduleapp.exception.NotFoundException
 import com.example.servicescheduleapp.model.Schedule
+import com.example.servicescheduleapp.service.DriverService
 import com.example.servicescheduleapp.service.ScheduleService
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -45,23 +54,35 @@ class ScheduleServiceTest {
     }
 
     @Test
-    fun getScheduleOnDayByTrainWhenNumberIsWrong() {
+    fun getScheduleOnDayByTrainWhenTrainNumberIsWrong() {
         val schedule1 = Schedule(1, 8001, 22551, 15, 21, 1, "Андроновка Оп", "Андроновка Оп",
                 LocalDateTime.of(2020, 10, 10, 16, 30, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0), "Андроновка Оп", "Андроновка Оп", LocalDateTime.of(2020, 10, 10, 17, 0, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0),
                 "645В")
+        val schedule2 = Schedule(1, 8001, 22551, 15, 21, 1, "Андроновка Оп", "Андроновка Оп",
+                LocalDateTime.of(2020, 10, 10, 16, 30, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0), "Андроновка Оп", "Андроновка Оп", LocalDateTime.of(2020, 10, 10, 17, 0, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0),
+                "645В")
 
-        val scheduleList: MutableList<Schedule> = arrayListOf(schedule1)
+        val scheduleList: MutableList<Schedule> = arrayListOf(schedule1, schedule2)
         val trainNumber = 113
         scheduleService.scheduleMap[trainNumber] = scheduleList
 
-        val falseTrainNumber = 114
+        assertThrows(NotFoundException::class.java) {scheduleService.getScheduleOnDayByTrain(260)}
+    }
 
-        val expectedScheduleList = scheduleService.getScheduleOnDayByTrain(falseTrainNumber)
-        assertNotNull(expectedScheduleList)
+    @Test
+    fun getScheduleOnDayByTrainWhenTrainNumberIsZero() {
+        val schedule1 = Schedule(1, 8001, 22551, 15, 21, 1, "Андроновка Оп", "Андроновка Оп",
+                LocalDateTime.of(2020, 10, 10, 16, 30, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0), "Андроновка Оп", "Андроновка Оп", LocalDateTime.of(2020, 10, 10, 17, 0, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0),
+                "645В")
+        val schedule2 = Schedule(1, 8001, 22551, 15, 21, 1, "Андроновка Оп", "Андроновка Оп",
+                LocalDateTime.of(2020, 10, 10, 16, 30, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0), "Андроновка Оп", "Андроновка Оп", LocalDateTime.of(2020, 10, 10, 17, 0, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0),
+                "645В")
 
-        val actualScheduleListSize = expectedScheduleList?.size
-        val expectedScheduleListSize = 0
-        assertEquals(expectedScheduleListSize, actualScheduleListSize)
+        val scheduleList: MutableList<Schedule> = arrayListOf(schedule1, schedule2)
+        val trainNumber = 113
+        scheduleService.scheduleMap[trainNumber] = scheduleList
+
+        assertThrows(BadRequestException::class.java) {scheduleService.getScheduleOnDayByTrain(0)}
     }
 
     @Test
@@ -175,12 +196,19 @@ class ScheduleServiceTest {
         val schedule1 = Schedule(1, 8001, 22551, 15, 21, 1, "Андроновка Оп", "Андроновка Оп",
                 LocalDateTime.of(2020, 10, 9, 11, 30, 0), LocalDateTime.of(2020, 10, 9, 11, 30, 0), "Андроновка Оп", "Андроновка Оп", LocalDateTime.of(2020, 10, 9, 16, 0, 0), LocalDateTime.of(2020, 10, 9, 16, 0, 0),
                 "645В")
-
         val trainNumber = 113
 
         scheduleService.saveSchedule(trainNumber, schedule1)
-
         assertEquals(scheduleService.scheduleMap.size, 1)
+    }
+
+    @Test
+    fun saveScheduleWhenTrainNumberIsZero() {
+        val schedule1 = Schedule(1, 8001, 22551, 15, 21, 1, "Андроновка Оп", "Андроновка Оп",
+                LocalDateTime.of(2020, 10, 9, 11, 30, 0), LocalDateTime.of(2020, 10, 9, 11, 30, 0), "Андроновка Оп", "Андроновка Оп", LocalDateTime.of(2020, 10, 9, 16, 0, 0), LocalDateTime.of(2020, 10, 9, 16, 0, 0),
+                "645В")
+
+        assertThrows(BadRequestException::class.java) {scheduleService.saveSchedule(0, schedule1)}
     }
 
     @Test

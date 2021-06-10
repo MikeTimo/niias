@@ -2,13 +2,11 @@ package com.example.servicescheduleapp.service
 
 import com.example.servicescheduleapp.config.BasicConfig
 import com.example.servicescheduleapp.config.DriversProperties
+import com.example.servicescheduleapp.exception.BadRequestException
+import com.example.servicescheduleapp.exception.NotFoundException
 import com.example.servicescheduleapp.model.Schedule
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
-import java.lang.RuntimeException
-import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
@@ -34,21 +32,18 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
     @Synchronized
     fun getScheduleOnDayByTrain(trainNumber: Int): List<Schedule>? {
         var scheduleList: MutableList<Schedule> = ArrayList()
-        if (trainNumber != null || trainNumber != 0) {
-            if (scheduleMap.containsKey(trainNumber) && scheduleMap[trainNumber] != null) {
-                scheduleList = scheduleMap[trainNumber]!!
-            } else {
-                throw ResponseStatusException(HttpStatus.NOT_FOUND)
-            }
+        if (trainNumber == 0) throw BadRequestException("Train number = 0")
+        if (scheduleMap.containsKey(trainNumber) && scheduleMap[trainNumber] != null) {
+            scheduleList = scheduleMap[trainNumber]!!
         } else {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+            throw NotFoundException("ScheduleList of train with train number = $trainNumber not found")
         }
         return scheduleList
     }
 
     @Synchronized
     fun getSchedulesBetweenTimePoint(startDataTime: LocalDateTime, endDataTime: LocalDateTime?): List<Schedule> {
-        if (startDataTime == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+        if (startDataTime == null) throw BadRequestException("Param TrainNumber is null")
         val endScheduleTime: LocalDateTime
         if (endDataTime == null) {
             val dataRequest = startDataTime.toLocalDate()
@@ -76,6 +71,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
     @Synchronized
     fun saveSchedule(trainNumber: Int, schedule: Schedule?) {
         var scheduleList: MutableList<Schedule> = ArrayList()
+        if (trainNumber == 0) throw BadRequestException("Train number is $trainNumber")
         if (scheduleMap.containsKey(trainNumber)) {
             if (scheduleMap.containsKey(trainNumber) != null) {
                 scheduleList = scheduleMap[trainNumber]!!
@@ -149,7 +145,6 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
     }
 
     private fun createWorkShiftOfDriver() {
-        if (config.workShifts.isEmpty() || driversProperties.drivers.isEmpty()) throw Exception("Не хватает данных")
         if (driversProperties.drivers.size == config.workShifts.size) {
             for (i in driversProperties.drivers.indices) {
                 workShiftOfDriver[driversProperties.drivers[i].id] = config.workShifts[i]

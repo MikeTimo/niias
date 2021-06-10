@@ -1,5 +1,6 @@
 package com.example.servicescheduleapp.controller
 
+import com.example.servicescheduleapp.exception.BadRequestException
 import com.example.servicescheduleapp.service.ScheduleService
 import com.example.servicescheduleapp.model.*
 import org.springframework.beans.factory.annotation.Autowired

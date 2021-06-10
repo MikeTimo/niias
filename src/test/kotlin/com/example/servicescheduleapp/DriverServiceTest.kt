@@ -1,5 +1,6 @@
 package com.example.servicescheduleapp
 
+import com.example.servicescheduleapp.exception.BadRequestException
 import com.example.servicescheduleapp.model.Driver
 import com.example.servicescheduleapp.service.DriverService
 import com.example.servicescheduleapp.service.ScheduleService
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.webjars.NotFoundException
 
 @SpringBootTest
 class DriverServiceTest {
@@ -67,10 +69,33 @@ class DriverServiceTest {
         driverService.driverMap[1] = driver
         driverService.driverMap[2] = driver1
 
-        val actualDriver = driverService.getDriverBiId(1);
+        val actualDriver = driverService.getDriverById(1);
         assertNotNull(actualDriver)
 
         assertEquals(driver, actualDriver)
+    }
+
+    @Test
+    fun getDriverByIdWhenIdIsZero() {
+        val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
+        val driver1 = Driver(2, 400, "Иван", "Иванович", "Иванов", false)
+
+        driverService.driverMap[1] = driver
+        driverService.driverMap[2] = driver1
+
+        assertThrows(BadRequestException::class.java) {driverService.getDriverById(0)}
+    }
+//
+    @Test()
+    fun getDriverByIdWhenIdIsWrong() {
+        val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
+        val driver1 = Driver(2, 400, "Иван", "Иванович", "Иванов", false)
+
+        driverService.driverMap[1] = driver
+        driverService.driverMap[2] = driver1
+
+        assertThrows(com.example.servicescheduleapp.exception.NotFoundException::class.java) { driverService.getDriverById(7) }
+
     }
 
     @Test
@@ -81,9 +106,31 @@ class DriverServiceTest {
         driverService.driverMap[1] = driver
         driverService.driverMap[2] = driver1
 
-        driverService.deleteDriverBiId(1)
+        driverService.deleteDriverById(1)
         val actualDriverListSize = driverService.getAllDrivers().size
 
         assertEquals(1, actualDriverListSize)
+    }
+
+    @Test
+    fun deleteDriverByIdWhenDriverIdIsNull() {
+        val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
+        val driver1 = Driver(2, 400, "Иван", "Иванович", "Иванов", false)
+
+        driverService.driverMap[1] = driver
+        driverService.driverMap[2] = driver1
+
+        assertThrows(BadRequestException::class.java) {driverService.deleteDriverById(0)}
+    }
+
+    @Test
+    fun deleteDriverByIdWhenDriverIdIsWrong() {
+        val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
+        val driver1 = Driver(2, 400, "Иван", "Иванович", "Иванов", false)
+
+        driverService.driverMap[1] = driver
+        driverService.driverMap[2] = driver1
+
+        assertThrows(com.example.servicescheduleapp.exception.NotFoundException::class.java) { driverService.deleteDriverById(7)}
     }
 }

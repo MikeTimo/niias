@@ -5,7 +5,6 @@ import com.example.servicescheduleapp.service.DriverService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
 class DriverController {
@@ -28,12 +27,12 @@ class DriverController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/drivers/{id}")
     fun getDriver(@PathVariable id: Int): Driver {
-        return driverService.getDriverBiId(id)
+        return driverService.getDriverById(id)
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/drivers/{id}")
     fun deleteDriver(@PathVariable id: Int) {
-        driverService.deleteDriverBiId(id)
+        driverService.deleteDriverById(id)
     }
 }

@@ -1,6 +1,8 @@
 package com.example.servicescheduleapp
 
 import com.example.servicescheduleapp.controller.DriverController
+import com.example.servicescheduleapp.exception.BadRequestException
+import com.example.servicescheduleapp.exception.NotFoundException
 import com.example.servicescheduleapp.model.Driver
 import com.example.servicescheduleapp.service.DriverService
 import com.example.servicescheduleapp.service.ScheduleService
@@ -31,11 +33,9 @@ class DriverControllerTest {
     fun getAvailableDriver() {
         val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
         val driver1 = Driver(2, 400, "Иван", "Иванович", "Иванов", true)
-
         val driversList = arrayListOf<Driver>(driver, driver1)
 
         given(driverService.getAllDrivers()).willReturn(driversList)
-
         mockMvc.perform(get("/drivers/available")).andExpect(status().isOk)
     }
 
@@ -43,35 +43,44 @@ class DriverControllerTest {
     fun getAllDrivers() {
         val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
         val driver1 = Driver(2, 400, "Иван", "Иванович", "Иванов", false)
-
         val driversList = arrayListOf<Driver>(driver, driver1)
 
         given(driverService.getAllDrivers()).willReturn(driversList)
-
         mockMvc.perform(get("/drivers")).andExpect(status().isOk)
     }
 
     @Test
     fun getDriver() {
         val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
-
         val driverId = 1
 
-        given(driverService.getDriverBiId(driverId)).willReturn(driver)
-
+        given(driverService.getDriverById(driverId)).willReturn(driver)
         mockMvc.perform(get("/drivers/1")).andExpect(status().isOk)
+    }
+
+    @Test
+    fun getDriverWhenDriverIdIsZero() {
+        val driverId = 0
+
+        given(driverService.getDriverById(driverId)).willThrow(BadRequestException::class.java)
+        mockMvc.perform(get("/drivers/0")).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun getDriverWhenDriverIdIsWrong() {
+        val driverId = 7
+
+        given(driverService.getDriverById(driverId)).willThrow(NotFoundException::class.java)
+        mockMvc.perform(get("/drivers/7")).andExpect(status().isNotFound)
     }
 
     @Test
     fun deleteDriver() {
         val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
-
         val driverId = 1
 
-        doNothing().`when`(driverService).deleteDriverBiId(anyInt())
-
-        driverService.deleteDriverBiId(driverId)
-
+        doNothing().`when`(driverService).deleteDriverById(anyInt())
+        driverService.deleteDriverById(driverId)
         mockMvc.perform(get("/drivers/1")).andExpect(status().isOk)
     }
 }
