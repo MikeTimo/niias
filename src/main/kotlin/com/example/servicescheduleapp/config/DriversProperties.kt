@@ -5,24 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 
 @Component
-@ConfigurationProperties(prefix = "app-drivers")
+@ConfigurationProperties(prefix = "app")
 class DriversProperties() {
-    val drivers: List<Driver> = ArrayList()
-
-    fun checkDriverIsAvailable(driverId: Int): Boolean {
-        var driverAvailable = false;
-        for (driver in drivers) {
-            if (driver.id == driverId && driver.isAvailable)
-                driverAvailable = true
-        }
-        return driverAvailable
-    }
-
-    fun updateIsAvailableOnFalse(driverId: Int) {
-        for (driver in drivers) {
-            if (driver.id == driverId) {
-                driver.isAvailable = false
-            }
-        }
-    }
+    var drivers: List<Driver> = ArrayList()
 }
