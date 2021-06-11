@@ -4,7 +4,6 @@ import com.example.servicescheduleapp.model.RollingStock
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import kotlin.collections.ArrayList
-import kotlin.streams.toList
 
 @Component
 @ConfigurationProperties(prefix = "app")
