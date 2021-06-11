@@ -13,5 +13,5 @@ import org.springframework.boot.runApplication
 class RestServiceApplication
 
 fun main(args: Array<String>) {
-    val context =  runApplication<RestServiceApplication>(*args)
+    runApplication<RestServiceApplication>(*args)
 }
