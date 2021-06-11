@@ -1,22 +1,15 @@
 package com.example.servicescheduleapp
 
-import com.example.servicescheduleapp.config.BasicConfig
-import com.example.servicescheduleapp.config.DriversProperties
-import com.example.servicescheduleapp.config.RollingStockProperties
-import com.example.servicescheduleapp.controller.ScheduleController
 import com.example.servicescheduleapp.exception.BadRequestException
 import com.example.servicescheduleapp.exception.NotFoundException
 import com.example.servicescheduleapp.model.Schedule
-import com.example.servicescheduleapp.service.DriverService
 import com.example.servicescheduleapp.service.ScheduleService
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDateTime
 import java.time.LocalTime
 

@@ -184,7 +184,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicPropert
      * Метод для складывания дат
      * @param startTimeLap, к которой нужно прибавить время
      * @param timeLap, которое прибавляем
-     * @return Возвращение суммы
+     * @return Возвращение времени
      */
     fun sumTime(startTimeLap: LocalDateTime?, timeLap: LocalTime?): LocalDateTime {
         if (startTimeLap != null && timeLap != null) {
@@ -222,7 +222,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicPropert
 
     /**
      * метод для создания списка расписания
-     * @return список расписаний
+     * @return scheduleList - список расписаний
      */
     private fun createScheduleList(): MutableList<Schedule> {
         val scheduleList: MutableList<Schedule> = ArrayList()
@@ -241,6 +241,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicPropert
 
     /**
      * метод для создания расписания
+     * @return schedule расписания
      */
     private fun createSchedule(codOfTechnicalOperationWithTrains: Int, trainNumber: Int, trainIndex: Int,
                                countTrainOnLine: Int, sequentialNumberOfBrigade: Int, driverId: Int, startTimeLap: LocalDateTime?,

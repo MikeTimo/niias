@@ -39,7 +39,7 @@ class RollingStockService(val rollingStockProperties: RollingStockProperties) {
 
     /**
      * Метод для получения номера поезда в рандомном порядке
-     * @return номер поезда
+     * @return trainNumber - номер поезда
      */
     fun getRandomTrainNumber(): Int {
         val train = listUsedOfRollingStock[(listUsedOfRollingStock.indices).random()]

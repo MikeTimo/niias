@@ -46,7 +46,7 @@ class DriverService(val driversProperties: DriversProperties) {
     /**
      * Проверка машиниста на доступность
      * @param driverId - id машиниста
-     * @return статус доступности машиниста
+     * @return driverAvailable - статус доступности машиниста
      */
     fun checkDriverIsAvailable(driverId: Int): Boolean {
         var driverAvailable = false;
