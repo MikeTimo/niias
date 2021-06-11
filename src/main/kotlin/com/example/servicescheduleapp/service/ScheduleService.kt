@@ -19,6 +19,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
                       val driverService: DriverService,
                       val rollingStockService: RollingStockService,
                       val driversProperties: DriversProperties) {
+
     val workShiftOfDriver: MutableMap<Int, BasicConfig.WorkShift> = HashMap()
     val timeAllLaps: MutableMap<LocalDateTime?, LocalDateTime> = TreeMap()
     var scheduleMap: MutableMap<Int, MutableList<Schedule>> = ConcurrentHashMap()
@@ -89,7 +90,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
     }
 
     fun createScheduleListForTrain() {
-        var scheduleList: MutableList<Schedule> = ArrayList()
+        var scheduleList: MutableList<Schedule>
         for (i in 0 until rollingStockService.listUsedOfRollingStock.size) {
             scheduleList = createScheduleList()
             scheduleMap[rollingStockService.getRandomTrainNumber()] = scheduleList
