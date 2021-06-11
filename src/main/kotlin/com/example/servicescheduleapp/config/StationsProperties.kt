@@ -6,5 +6,7 @@ import org.springframework.stereotype.Component
 @Component
 @ConfigurationProperties(prefix = "app")
 class StationsProperties {
+
+    /** Список станций */
     val stations: List<String> = ArrayList()
 }

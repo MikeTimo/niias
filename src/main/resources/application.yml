@@ -5,7 +5,6 @@ app:
       include-message: always
   codOfTechnicalOperationWithTrains: 1
   trainNumberOuterCircle: 8001
-  trainNumberInnerCircle: 8000
   trainIndex: 72078001
   countTrainOnLine: 10
   sequentialNumberOfBrigade: 16

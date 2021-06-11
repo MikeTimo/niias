@@ -74,6 +74,53 @@ paths:
                 items:
                   $ref: '#/components/schemas/ScheduleList'
 
+  /rolling-stock:
+    get:
+      summary: "возвращает поезд по его номеру"
+      parameters:
+        - name: number
+          in: query
+          description: Номер поезда
+          required: true
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RollingStock'
+
+  /rolling-stock/{id}:
+    get:
+      summary: "возвращает поезд по его id"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RollingStock'
+
+  /rolling-stock/list:
+    get:
+      summary: "возвращает список поездов"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RollingStockList'
+
+
   /drivers:
     get:
       summary: "Возвращает список машинистов"
@@ -246,6 +293,12 @@ components:
 
         isAvailable:
           type: boolean
+
+    RollingStockList:
+      description: Список поездов
+      type: object
+      items:
+        $ref: '#/components/schemas/RollingStock'
 
     RollingStock:
       description: Объект "Подвижной состав"

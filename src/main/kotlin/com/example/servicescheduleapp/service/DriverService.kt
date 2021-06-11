@@ -16,21 +16,10 @@ class DriverService(val driversProperties: DriversProperties) {
     }
 
     @Synchronized
-    fun getAvailableDrivers(): List<Driver> {
-        val availableDrivers: MutableList<Driver> = ArrayList()
-        for (driver in driverMap.values) {
-            if (driver.isAvailable!!) {
-                availableDrivers.add(driver)
-            }
-        }
-        return availableDrivers
-    }
+    fun getAvailableDrivers(): List<Driver> = driverMap.values.filter { it.isAvailable }
 
     @Synchronized
-    fun getAllDrivers(): List<Driver> {
-        val drivers = ArrayList(driverMap.values)
-        return drivers
-    }
+    fun getAllDrivers(): List<Driver> = driverMap.values.toList()
 
     @Synchronized
     fun getDriverById(id: Int): Driver {
@@ -54,6 +43,11 @@ class DriverService(val driversProperties: DriversProperties) {
         }
     }
 
+    /**
+     * Проверка машиниста на доступность
+     * @param driverId - id машиниста
+     * @return статус доступности машиниста
+     */
     fun checkDriverIsAvailable(driverId: Int): Boolean {
         var driverAvailable = false;
         for (driver in driversProperties.drivers) {
@@ -63,6 +57,10 @@ class DriverService(val driversProperties: DriversProperties) {
         return driverAvailable
     }
 
+    /**
+     * Обновление статуса isAvailable машиниста
+     * @param driverId - id машиниста
+     */
     fun updateIsAvailableOnFalse(driverId: Int) {
         for (driver in driversProperties.drivers) {
             if (driver.id == driverId) {
@@ -71,6 +69,9 @@ class DriverService(val driversProperties: DriversProperties) {
         }
     }
 
+    /**
+     * Метод для внесения списка машинистов из конфигурации в driverMap
+     */
     private fun addDriversFromConfigToDriverMap() {
         for (driver in driversProperties.drivers) {
             driverMap[driver.id] = driver

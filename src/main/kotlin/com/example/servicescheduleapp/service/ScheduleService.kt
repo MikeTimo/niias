@@ -1,6 +1,6 @@
 package com.example.servicescheduleapp.service
 
-import com.example.servicescheduleapp.config.BasicConfig
+import com.example.servicescheduleapp.config.BasicProperties
 import com.example.servicescheduleapp.config.DriversProperties
 import com.example.servicescheduleapp.exception.BadRequestException
 import com.example.servicescheduleapp.exception.NotFoundException
@@ -15,13 +15,29 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 @Service
-class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
+class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicProperties,
                       val driverService: DriverService,
                       val rollingStockService: RollingStockService,
                       val driversProperties: DriversProperties) {
 
-    val workShiftOfDriver: MutableMap<Int, BasicConfig.WorkShift> = HashMap()
+    /**
+     * Мапа рабочих смен машинистов
+     * Ключ: Id машиниста
+     * Значение: Объект с параметрами начала и конца рабочей смены
+     */
+    val workShiftOfDriver: MutableMap<Int, BasicProperties.WorkShift> = HashMap()
+
+    /**
+     * Время отправления с начальной станции и время прибытия на конечную станцию для всех кругов
+     * которые совершит поезд
+     */
     val timeAllLaps: MutableMap<LocalDateTime?, LocalDateTime> = TreeMap()
+
+    /**
+     * Мапа для хранения списка расписаний для поезда
+     * Ключ: Номер поезда
+     * Значение: Список расписаний
+     */
     var scheduleMap: MutableMap<Int, MutableList<Schedule>> = ConcurrentHashMap()
 
     init {
@@ -89,6 +105,9 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
         }
     }
 
+    /**
+     * создает список расписания для поезда
+     */
     fun createScheduleListForTrain() {
         var scheduleList: MutableList<Schedule>
         for (i in 0 until rollingStockService.listUsedOfRollingStock.size) {
@@ -97,6 +116,16 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
         }
     }
 
+    /**
+     * происходит выбор машиниста: если previousDriverId == 0, то происходит проверка машинистов
+     * из списка машинисов(проверяется время начала работы, время конца работы и доступность)
+     * если машинст выбран previousDriverId != 0, то происходит проверка на время завершения работы машиниста
+     * @param startTimeLap - время начала отправления поезда с начальной станции
+     * @param endTimeLap - время прибытия поезда на конечную станцию
+     * @param previousDriverId - номер машиниста, который для этого управлял поездом,
+     * если никого не было, то равно 0
+     * @return id машиниста
+     */
     fun chooseDriver(startTimeLap: LocalDateTime?, endTimeLap: LocalDateTime?, previousDriverId: Int): Int {
         if (startTimeLap != null && endTimeLap != null) {
             var id = 0
@@ -121,6 +150,13 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
         }
     }
 
+    /**
+     * метод для проверки, начинает ли машинист раньше, чем время отправления поезда с начальной станции
+     * @param startTimeOfWorkOfDriver начала смены машиниста
+     * @param startTimeLap отправления поезда с начальной станции
+     * @return true если машинист начинает раньше, чем поезд отправляет с начальной станции
+     * @return false если машинист начинает позже, чем поезд отправляет с начальной станции
+     */
     fun checkTimeOfStartWorkOfDriver(startTimeOfWorkOfDriver: LocalDateTime?, startTimeLap: LocalDateTime?): Boolean {
         if (startTimeOfWorkOfDriver != null && startTimeLap != null) {
             return startTimeOfWorkOfDriver.isBefore(startTimeLap)
@@ -129,6 +165,13 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
         }
     }
 
+    /**
+     * метод для проверки, заканчивается ли время работы машиниста раньше, чем время прибытия поезда на конечную станцию
+     * @param endTimeOfWorkOfDriver - время конца смены машиниста
+     * @param endTimeLap: - время прибытия поезда на конечную станцию
+     * @return возврашает true если время машинист заканчивает позже, чем прибывает поезд на еонечную станцию
+     * @return возвращает false если машинист заканчивает раньше, чем поезд прибывает на последнюю станцию
+     */
     fun checkTimeOfEndWorkOfDriver(endTimeOfWorkOfDriver: LocalDateTime?, endTimeLap: LocalDateTime?): Boolean {
         if (endTimeOfWorkOfDriver != null && endTimeLap != null) {
             return endTimeOfWorkOfDriver.isAfter(endTimeLap)
@@ -137,6 +180,12 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
         }
     }
 
+    /**
+     * Метод для складывания дат
+     * @param startTimeLap, к которой нужно прибавить время
+     * @param timeLap, которое прибавляем
+     * @return Возвращение суммы
+     */
     fun sumTime(startTimeLap: LocalDateTime?, timeLap: LocalTime?): LocalDateTime {
         if (startTimeLap != null && timeLap != null) {
             return startTimeLap?.plusHours(timeLap.hour.toLong()).plusMinutes(timeLap.minute.toLong())
@@ -145,42 +194,54 @@ class ScheduleService(@Qualifier("basicConfigBean") val config: BasicConfig,
         }
     }
 
+    /**
+     * Заполнение workShiftOfDriver
+     */
     private fun createWorkShiftOfDriver() {
-        if (driversProperties.drivers.size == config.workShifts.size) {
+        if (driversProperties.drivers.size == properties.workShifts.size) {
             for (i in driversProperties.drivers.indices) {
-                workShiftOfDriver[driversProperties.drivers[i].id] = config.workShifts[i]
+                workShiftOfDriver[driversProperties.drivers[i].id] = properties.workShifts[i]
             }
         }
     }
 
+    /**
+     * Заполнение timeAllLaps данными
+     */
     private fun createMapOfTimeAllLaps() {
-        if (config.startWorkOfRollingStock != null) {
-            var startTimeLap = config.startWorkOfRollingStock
-            var endTimeOfLap = sumTime(startTimeLap, config.timeLap)
+        if (properties.startWorkOfRollingStock != null) {
+            var startTimeLap = properties.startWorkOfRollingStock
+            var endTimeOfLap = sumTime(startTimeLap, properties.timeLap)
             do {
                 timeAllLaps[startTimeLap] = endTimeOfLap
                 startTimeLap = endTimeOfLap
-                endTimeOfLap = sumTime(startTimeLap, config.timeLap)
-            } while (endTimeOfLap.isBefore(config.endWorkOfRollingStock))
+                endTimeOfLap = sumTime(startTimeLap, properties.timeLap)
+            } while (endTimeOfLap.isBefore(properties.endWorkOfRollingStock))
         }
     }
 
+    /**
+     * метод для создания списка расписания
+     * @return список расписаний
+     */
     private fun createScheduleList(): MutableList<Schedule> {
         val scheduleList: MutableList<Schedule> = ArrayList()
-        var trainNumberOuterCircle = config.trainNumberOuterCircle
-        var trainNumberInnerCircle = config.trainNumberInnerCircle
+        var trainNumberOuterCircle = properties.trainNumberOuterCircle
         var previousDriverId = 0
         for ((startTimeLap, endTimeLap) in timeAllLaps) {
             var driverId = chooseDriver(startTimeLap, endTimeLap, previousDriverId)
             if (driverId == 0) throw Exception("createScheduleList: Driver Id = 0")
-            scheduleList.add(createSchedule(config.codOfTechnicalOperationWithTrains, trainNumberOuterCircle, config.trainIndex, config.countTrainOnLine, config.sequentialNumberOfBrigade, driverId,
-                    startTimeLap, endTimeLap, config.codeOfHeadWagon))
+            scheduleList.add(createSchedule(properties.codOfTechnicalOperationWithTrains, trainNumberOuterCircle, properties.trainIndex, properties.countTrainOnLine, properties.sequentialNumberOfBrigade, driverId,
+                    startTimeLap, endTimeLap, properties.codeOfHeadWagon))
             trainNumberOuterCircle += 2
             previousDriverId = driverId
         }
         return scheduleList
     }
 
+    /**
+     * метод для создания расписания
+     */
     private fun createSchedule(codOfTechnicalOperationWithTrains: Int, trainNumber: Int, trainIndex: Int,
                                countTrainOnLine: Int, sequentialNumberOfBrigade: Int, driverId: Int, startTimeLap: LocalDateTime?,
                                endTimeLap: LocalDateTime, codeOfHeadWagon: String): Schedule {

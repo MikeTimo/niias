@@ -7,5 +7,7 @@ import org.springframework.stereotype.Component
 @Component
 @ConfigurationProperties(prefix = "app")
 class DriversProperties() {
-    var drivers: List<Driver> = ArrayList()
+
+    /** Список машинистов */
+    var drivers: MutableList<Driver> = mutableListOf()
 }
