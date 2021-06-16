@@ -15,27 +15,26 @@ class ScheduleController {
     lateinit var scheduleService: ScheduleService
 
     @GetMapping("/schedule")
+    @ResponseStatus(HttpStatus.OK)
     fun getTrainSchedule(
-        @RequestParam(value = "trainNumber") trainNumber: Int
+            @RequestParam(value = "trainNumber") trainNumber: Int
     ): List<Schedule>? {
-        return scheduleService.getSchedule(trainNumber)
+        return scheduleService.getScheduleOnDayByTrain(trainNumber)
     }
 
     @GetMapping("/schedule/list")
+    @ResponseStatus(HttpStatus.OK)
     fun getSchedules(
-        @RequestParam(value = "startDataTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) startDateTime: LocalDateTime,
-        @RequestParam(
-            "endDataTime",
-            required = false
-        ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) endDateTime: LocalDateTime
+            @RequestParam(value = "startDataTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) startDateTime: LocalDateTime,
+            @RequestParam("endDataTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) endDateTime: LocalDateTime?
     ): List<Schedule> {
-        return scheduleService.getSchedules(startDateTime, endDateTime)
+        return scheduleService.getSchedulesBetweenTimePoint(startDateTime, endDateTime)
     }
 
     @PostMapping("/schedule")
-    @ResponseStatus(HttpStatus.OK)
-    fun post(@RequestBody schedule: Schedule): String {
-        scheduleService.saveSchedule(schedule)
+    @ResponseStatus(HttpStatus.CREATED)
+    fun saveSchedule(@RequestParam(value = "trainNumber") trainNumber: Int, @RequestBody schedule: Schedule): String {
+        scheduleService.saveSchedule(trainNumber, schedule)
         return "OK"
     }
 }

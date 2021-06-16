@@ -1,6 +1,11 @@
 package com.example.servicescheduleapp.model
 
 data class Driver(
-    val id: Int, val number: Int, val firstName: String,
-    val middleName: String, val lastName: String, var isAvailable: Boolean
+        var id: Int = 0,
+        var number: Int = 0,
+        var firstName: String = "",
+        var middleName: String = "",
+        var lastName: String = "",
+        var isAvailable: Boolean = true
 )
+
