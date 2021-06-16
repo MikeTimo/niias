@@ -1,9 +1,6 @@
 package com.example.servicescheduleapp
 
-import com.example.servicescheduleapp.config.BasicProperties
-import com.example.servicescheduleapp.config.DriversProperties
-import com.example.servicescheduleapp.config.RollingStockProperties
-import com.example.servicescheduleapp.config.StationsProperties
+import com.example.servicescheduleapp.config.*
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
