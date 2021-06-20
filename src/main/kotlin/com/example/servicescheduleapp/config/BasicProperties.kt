@@ -58,7 +58,7 @@ class BasicProperties() {
     var workShifts: List<WorkShift> = mutableListOf()
 
     @ConfigurationPropertiesBinding
-    class WorkShift() {
+    class WorkShift {
         /** Время начала смены машиниста */
         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         var startWorkTime: LocalDateTime? = null

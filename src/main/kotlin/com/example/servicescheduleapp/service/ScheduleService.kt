@@ -15,7 +15,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 @Service
-class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicProperties,
+class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicProperties,
                       val driverService: DriverService,
                       val rollingStockService: RollingStockService,
                       val driversProperties: DriversProperties) {
@@ -122,7 +122,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicPropert
      * если машинст выбран previousDriverId != 0, то происходит проверка на время завершения работы машиниста
      * @param startTimeLap - время начала отправления поезда с начальной станции
      * @param endTimeLap - время прибытия поезда на конечную станцию
-     * @param previousDriverId - номер машиниста, который для этого управлял поездом,
+     * @param previousDriverId - номер машиниста, который управлял поездом,
      * если никого не было, то равно 0
      * @return id машиниста
      */
@@ -198,10 +198,8 @@ class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicPropert
      * Заполнение workShiftOfDriver
      */
     private fun createWorkShiftOfDriver() {
-        if (driversProperties.drivers.size == properties.workShifts.size) {
-            for (i in driversProperties.drivers.indices) {
-                workShiftOfDriver[driversProperties.drivers[i].id] = properties.workShifts[i]
-            }
+        for (i in driversProperties.drivers.indices) {
+            workShiftOfDriver[driversProperties.drivers[i].id] = basicProperties.workShifts[i]
         }
     }
 
@@ -209,14 +207,14 @@ class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicPropert
      * Заполнение timeAllLaps данными
      */
     private fun createMapOfTimeAllLaps() {
-        if (properties.startWorkOfRollingStock != null) {
-            var startTimeLap = properties.startWorkOfRollingStock
-            var endTimeOfLap = sumTime(startTimeLap, properties.timeLap)
+        if (basicProperties.startWorkOfRollingStock != null) {
+            var startTimeLap = basicProperties.startWorkOfRollingStock
+            var endTimeOfLap = sumTime(startTimeLap, basicProperties.timeLap)
             do {
                 timeAllLaps[startTimeLap] = endTimeOfLap
                 startTimeLap = endTimeOfLap
-                endTimeOfLap = sumTime(startTimeLap, properties.timeLap)
-            } while (endTimeOfLap.isBefore(properties.endWorkOfRollingStock))
+                endTimeOfLap = sumTime(startTimeLap, basicProperties.timeLap)
+            } while (endTimeOfLap.isBefore(basicProperties.endWorkOfRollingStock))
         }
     }
 
@@ -226,13 +224,13 @@ class ScheduleService(@Qualifier("basicConfigBean") val properties: BasicPropert
      */
     private fun createScheduleList(): MutableList<Schedule> {
         val scheduleList: MutableList<Schedule> = ArrayList()
-        var trainNumberOuterCircle = properties.trainNumberOuterCircle
+        var trainNumberOuterCircle = basicProperties.trainNumberOuterCircle
         var previousDriverId = 0
         for ((startTimeLap, endTimeLap) in timeAllLaps) {
             var driverId = chooseDriver(startTimeLap, endTimeLap, previousDriverId)
             if (driverId == 0) throw Exception("createScheduleList: Driver Id = 0")
-            scheduleList.add(createSchedule(properties.codOfTechnicalOperationWithTrains, trainNumberOuterCircle, properties.trainIndex, properties.countTrainOnLine, properties.sequentialNumberOfBrigade, driverId,
-                    startTimeLap, endTimeLap, properties.codeOfHeadWagon))
+            scheduleList.add(createSchedule(basicProperties.codOfTechnicalOperationWithTrains, trainNumberOuterCircle, basicProperties.trainIndex, basicProperties.countTrainOnLine, basicProperties.sequentialNumberOfBrigade, driverId,
+                    startTimeLap, endTimeLap, basicProperties.codeOfHeadWagon))
             trainNumberOuterCircle += 2
             previousDriverId = driverId
         }
