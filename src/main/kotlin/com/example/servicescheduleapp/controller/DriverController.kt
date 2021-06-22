@@ -30,8 +30,8 @@ class DriverController {
         return driverService.getDriverById(id)
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/drivers/{id}")
+//    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping("/delete/{id}")
     fun deleteDriver(@PathVariable id: Int) {
         driverService.deleteDriverById(id)
     }

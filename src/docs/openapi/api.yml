@@ -131,26 +131,29 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/DriverList'
+                  $ref: '#/components/schemas/Driver'
 
   /drivers/{id}:
     get:
       summary: "Возвращает машиниста по id"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/Driver'
+#      parameters:
+#        - in: path
+#          name: id
+#          schema:
+#            type: integer
+#      responses:
+#        200:
+#          description: Successful response
+#          content:
+#            application/json:
+#              schema:
+#                items:
+#                  $ref: '#/components/schemas/Driver'
+    requestBody:
+      $ref: '#/components/schemas/Driver'
 
-    delete:
+  /delete/{id}:
+    post:
       summary: "Удаление машиниста по id"
       parameters:
         - in: path
@@ -159,7 +162,7 @@ paths:
             type: integer
       responses:
         200:
-          description: Successful response
+          description: Successful delete
 
 
   /drivers/available:
@@ -172,7 +175,7 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/DriverList'
+                  $ref: '#/components/schemas/Driver'
 
 components:
   schemas:
@@ -263,12 +266,6 @@ components:
 
         codeOfHeadWagon:
           type: string
-
-    DriverList:
-      description: Список "Машинистов"
-      type: array
-      items:
-        $ref: '#/components/schemas/Driver'
 
     Driver:
       description: Объект "Машинист"

@@ -24,13 +24,7 @@ class DriverService(val driversProperties: DriversProperties) {
     @Synchronized
     fun getDriverById(id: Int): Driver {
         if (id == null || id == 0) throw BadRequestException("Driver id is null or id = $id")
-        var driver: Driver
-        if (driverMap.containsKey(id) && driverMap[id] != null) {
-            driver = driverMap[id]!!
-        } else {
-            throw NotFoundException("Driver with id = $id not found")
-        }
-        return driver
+        return driverMap[id] ?: throw NotFoundException("Driver with id = $id not found")
     }
 
     @Synchronized
@@ -49,12 +43,15 @@ class DriverService(val driversProperties: DriversProperties) {
      * @return driverAvailable - статус доступности машиниста
      */
     fun checkDriverIsAvailable(driverId: Int): Boolean {
-        var driverAvailable = false;
-        for (driver in driversProperties.drivers) {
-            if (driver.id == driverId && driver.isAvailable)
-                driverAvailable = true
+        driversProperties.drivers.forEach {
+            if (it.id == driverId && it.isAvailable)
+                return true
         }
-        return driverAvailable
+
+        for (driver in driversProperties.drivers) {
+
+        }
+        return false
     }
 
     /**

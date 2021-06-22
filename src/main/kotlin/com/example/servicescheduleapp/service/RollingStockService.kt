@@ -43,14 +43,21 @@ class RollingStockService(val rollingStockProperties: RollingStockProperties) {
      */
     fun getRandomTrainNumber(): Int {
         val train = listUsedOfRollingStock[(listUsedOfRollingStock.indices).random()]
-        var trainNumber = 0
-        if (train.isAvailable) {
+
+        return if(!train.isAvailable) getRandomTrainNumber()
+        else {
             train.isAvailable = false
-            trainNumber = train.number
-        } else {
-            trainNumber = getRandomTrainNumber()
+            train.number
         }
-        return trainNumber
+
+//        var trainNumber = 0
+//        if (train.isAvailable) {
+//            train.isAvailable = false
+//            trainNumber = train.number
+//        } else {
+//            trainNumber = getRandomTrainNumber()
+//        }
+//        return trainNumber
     }
 
     /**

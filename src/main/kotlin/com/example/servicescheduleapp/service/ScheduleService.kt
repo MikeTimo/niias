@@ -71,15 +71,17 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
         val listWithTrueSchedule: MutableList<Schedule> = ArrayList()
         for ((key, value) in scheduleMap) {
             for (schedule in value) {
-                if (schedule.departureTime.isAfter(startDataTime) && schedule.arrivalTime.isBefore(endScheduleTime)) {
-                    listWithTrueSchedule.add(schedule)
-                } else if (schedule.departureTime.isBefore(startDataTime) && schedule.arrivalTime.isAfter(startDataTime) && schedule.arrivalTime.isBefore(endScheduleTime)) {
-                    listWithTrueSchedule.add(schedule)
-                } else if (schedule.departureTime.isAfter(startDataTime) && schedule.departureTime.isBefore(endScheduleTime) && schedule.arrivalTime.isAfter(endScheduleTime)) {
-                    listWithTrueSchedule.add(schedule)
-                } else if (schedule.departureTime.isBefore(startDataTime) && schedule.arrivalTime.isAfter(endScheduleTime)) {
+
+                if (schedule.departureTime.isBefore(endDataTime) && schedule.arrivalTime.isAfter(startDataTime)) {
                     listWithTrueSchedule.add(schedule)
                 }
+//                } else if (schedule.departureTime.isBefore(startDataTime) && schedule.arrivalTime.isAfter(startDataTime) && schedule.arrivalTime.isBefore(endScheduleTime)) {
+//                    listWithTrueSchedule.add(schedule)
+//                } else if (schedule.departureTime.isAfter(startDataTime) && schedule.departureTime.isBefore(endScheduleTime) && schedule.arrivalTime.isAfter(endScheduleTime)) {
+//                    listWithTrueSchedule.add(schedule)
+//                } else if (schedule.departureTime.isBefore(startDataTime) && schedule.arrivalTime.isAfter(endScheduleTime)) {
+//                    listWithTrueSchedule.add(schedule)
+//                }
             }
         }
         return listWithTrueSchedule
@@ -120,6 +122,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
      * происходит выбор машиниста: если previousDriverId == 0, то происходит проверка машинистов
      * из списка машинисов(проверяется время начала работы, время конца работы и доступность)
      * если машинст выбран previousDriverId != 0, то происходит проверка на время завершения работы машиниста
+     *
      * @param startTimeLap - время начала отправления поезда с начальной станции
      * @param endTimeLap - время прибытия поезда на конечную станцию
      * @param previousDriverId - номер машиниста, который управлял поездом,
@@ -127,27 +130,25 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
      * @return id машиниста
      */
     fun chooseDriver(startTimeLap: LocalDateTime?, endTimeLap: LocalDateTime?, previousDriverId: Int): Int {
-        if (startTimeLap != null && endTimeLap != null) {
-            var id = 0
-            if (previousDriverId != 0) {
-                if (checkTimeOfEndWorkOfDriver(workShiftOfDriver[previousDriverId]?.endWorkTime, endTimeLap)) {
-                    id = previousDriverId
-                } else {
-                    id = chooseDriver(startTimeLap, endTimeLap, 0)
-                }
+        if (startTimeLap == null || endTimeLap == null) throw Exception("Failed choose driver")
+
+        var id = 0
+        if (previousDriverId != 0) {
+            if (checkTimeOfEndWorkOfDriver(workShiftOfDriver[previousDriverId]?.endWorkTime, endTimeLap)) {
+                id = previousDriverId
             } else {
-                for ((driverId, workShift) in workShiftOfDriver) {
-                    if (checkTimeOfStartWorkOfDriver(workShift.startWorkTime, startTimeLap) && checkTimeOfEndWorkOfDriver(workShift.endWorkTime, endTimeLap) && driverService.checkDriverIsAvailable(driverId)) {
-                        id = driverId
-                        driverService.updateIsAvailableOnFalse(driverId)
-                        break
-                    }
+                id = chooseDriver(startTimeLap, endTimeLap, 0)
+            }
+        } else {
+            for ((driverId, workShift) in workShiftOfDriver) {
+                if (checkTimeOfStartWorkOfDriver(workShift.startWorkTime, startTimeLap) && checkTimeOfEndWorkOfDriver(workShift.endWorkTime, endTimeLap) && driverService.checkDriverIsAvailable(driverId)) {
+                    id = driverId
+                    driverService.updateIsAvailableOnFalse(driverId)
+                    break
                 }
             }
-            return id
-        } else {
-            throw Exception("Failed choose driver")
         }
+        return id
     }
 
     /**
