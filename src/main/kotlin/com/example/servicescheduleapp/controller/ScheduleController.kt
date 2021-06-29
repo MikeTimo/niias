@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 
 @RestController
+@RequestMapping("/schedule")
 class ScheduleController {
 
     @Autowired
     lateinit var scheduleService: ScheduleService
 
-    @GetMapping("/schedule")
+    @GetMapping("/get")
     @ResponseStatus(HttpStatus.OK)
     fun getTrainSchedule(
             @RequestParam(value = "trainNumber") trainNumber: Int
@@ -22,7 +23,7 @@ class ScheduleController {
         return scheduleService.getScheduleOnDayByTrain(trainNumber)
     }
 
-    @GetMapping("/schedule/list")
+    @GetMapping("/get-list")
     @ResponseStatus(HttpStatus.OK)
     fun getSchedules(
             @RequestParam(value = "startDataTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) startDateTime: LocalDateTime,
@@ -31,7 +32,7 @@ class ScheduleController {
         return scheduleService.getSchedulesBetweenTimePoint(startDateTime, endDateTime)
     }
 
-    @PostMapping("/schedule")
+    @PostMapping("/post")
     @ResponseStatus(HttpStatus.CREATED)
     fun saveSchedule(@RequestParam(value = "trainNumber") trainNumber: Int, @RequestBody schedule: Schedule): String {
         scheduleService.saveSchedule(trainNumber, schedule)

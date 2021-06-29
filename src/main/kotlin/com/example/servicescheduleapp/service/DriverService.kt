@@ -50,10 +50,7 @@ class DriverService(val driversProperties: DriversProperties) {
      */
     fun checkDriverIsAvailable(driverId: Int): Boolean {
         var driverAvailable = false;
-        for (driver in driversProperties.drivers) {
-            if (driver.id == driverId && driver.isAvailable)
-                driverAvailable = true
-        }
+        driversProperties.drivers.filter { x -> x.id == driverId && x.isAvailable }.map { driverAvailable = true }
         return driverAvailable
     }
 
@@ -62,11 +59,7 @@ class DriverService(val driversProperties: DriversProperties) {
      * @param driverId - id машиниста
      */
     fun updateIsAvailableOnFalse(driverId: Int) {
-        for (driver in driversProperties.drivers) {
-            if (driver.id == driverId) {
-                driver.isAvailable = false
-            }
-        }
+        driversProperties.drivers.filter { x -> x.id == driverId }.map { x -> x.isAvailable = false }
     }
 
     /**

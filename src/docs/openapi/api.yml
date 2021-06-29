@@ -3,7 +3,7 @@ info:
   version: 1.0.0
   title: niias
 paths:
-  /schedule:
+  /schedule/get:
     get:
       summary: 'Возвращает список "Расписание" определенного поезда'
       parameters:
@@ -22,7 +22,12 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/ScheduleList'
+        400:
+          description: Train number = 0
+        404:
+          description: ScheduleList of train with train number not found
 
+  /schedule/post:
     post:
       summary: 'Добавляет объект "Расписание" в список расписаний'
       parameters:
@@ -37,7 +42,6 @@ paths:
             schema:
               items:
                 $ref: '#/components/schemas/Schedule'
-
       responses:
         200:
           description: OK
@@ -46,8 +50,10 @@ paths:
               schema:
                 type: string
                 example: OK
+        400:
+          description: Train number is 0
 
-  /schedule/list:
+  /schedule//get-list:
     get:
       summary: "Возвращает список расписаний соответсвующих временному промежутку"
       parameters:
@@ -73,6 +79,8 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/ScheduleList'
+        400:
+          description: Param startDataTime is null
 
   /rolling-stock:
     get:
@@ -90,6 +98,10 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/RollingStock'
+        400:
+          description: Bad request
+        404:
+          description: RollingStock with number not found
 
   /rolling-stock/{id}:
     get:
@@ -107,6 +119,10 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/RollingStock'
+        400:
+          description: Bad request
+        404:
+          description: RollingStock with id not found
 
   /rolling-stock/list:
     get:
@@ -131,7 +147,7 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/DriverList'
+                  $ref: '#/components/schemas/Driver'
 
   /drivers/{id}:
     get:
@@ -149,7 +165,12 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/Driver'
+        400:
+          description: Bad request
+        404:
+          description: Driver with id not found
 
+  /drivers/{id}/delete:
     delete:
       summary: "Удаление машиниста по id"
       parameters:
@@ -160,6 +181,10 @@ paths:
       responses:
         200:
           description: Successful response
+        400:
+          description: Bad request
+        404:
+          description: Driver with id not found
 
 
   /drivers/available:
@@ -172,7 +197,7 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/DriverList'
+                  $ref: '#/components/schemas/Driver'
 
 components:
   schemas:
@@ -263,12 +288,6 @@ components:
 
         codeOfHeadWagon:
           type: string
-
-    DriverList:
-      description: Список "Машинистов"
-      type: array
-      items:
-        $ref: '#/components/schemas/Driver'
 
     Driver:
       description: Объект "Машинист"

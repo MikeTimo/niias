@@ -7,24 +7,25 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/rolling-stock")
 class RollingStockController {
 
     @Autowired
     lateinit var rollingStockService: RollingStockService
 
-    @GetMapping("/rolling-stock/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     fun getRollingStockById(@PathVariable id: Int): RollingStock {
         return rollingStockService.getRollingStockById(id)
     }
 
-    @GetMapping("/rolling-stock")
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     fun getRollingStockByNumber(@RequestParam(value = "number") number: Int): RollingStock {
         return rollingStockService.getRollingStockByNumber(number)
     }
 
-    @GetMapping("/rolling-stock/list")
+    @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     fun getAllRollingStock(): List<RollingStock> {
         return rollingStockService.getAllRollingStock()

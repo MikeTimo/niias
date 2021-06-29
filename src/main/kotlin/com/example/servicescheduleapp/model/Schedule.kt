@@ -11,11 +11,11 @@ data class Schedule(
     val driverNumber: Int,
     val nameOfDepartureStation: String,
     val nameOfDepartureStationWithBrigade: String,
-    var departureTime: LocalDateTime,
-    var departureTimeWithBrigade: LocalDateTime,
+    val departureTime: LocalDateTime,
+    val departureTimeWithBrigade: LocalDateTime,
     val nameOfArrivalStation: String,
     val nameOfArrivalStationWithBrigade: String,
-    var arrivalTime: LocalDateTime,
-    var arrivalTimeWithBrigade: LocalDateTime,
+    val arrivalTime: LocalDateTime,
+    val arrivalTimeWithBrigade: LocalDateTime,
     val codeOfHeadWagon: String
 )

@@ -21,7 +21,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
                       val driversProperties: DriversProperties) {
 
     /**
-     * Мапа рабочих смен машинистов
+     * Хранилище рабочих смен машинистов
      * Ключ: Id машиниста
      * Значение: Объект с параметрами начала и конца рабочей смены
      */
@@ -31,24 +31,28 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
      * Время отправления с начальной станции и время прибытия на конечную станцию для всех кругов
      * которые совершит поезд
      */
-    val timeAllLaps: MutableMap<LocalDateTime?, LocalDateTime> = TreeMap()
+    val timeAllLaps: MutableMap<LocalDateTime, LocalDateTime> = TreeMap()
 
     /**
-     * Мапа для хранения списка расписаний для поезда
+     * Хранилище для хранения списка расписаний для поезда
      * Ключ: Номер поезда
      * Значение: Список расписаний
      */
     var scheduleMap: MutableMap<Int, MutableList<Schedule>> = ConcurrentHashMap()
 
     init {
-        createWorkShiftOfDriver()
-        createMapOfTimeAllLaps()
-        createScheduleListForTrain()
+        try {
+            createWorkShiftOfDriver()
+            createMapOfTimeAllLaps()
+            createScheduleListForTrain()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     @Synchronized
     fun getScheduleOnDayByTrain(trainNumber: Int): List<Schedule>? {
-        var scheduleList: MutableList<Schedule> = ArrayList()
+        var scheduleList: MutableList<Schedule>
         if (trainNumber == 0) throw BadRequestException("Train number = 0")
         if (scheduleMap.containsKey(trainNumber) && scheduleMap[trainNumber] != null) {
             scheduleList = scheduleMap[trainNumber]!!
@@ -60,24 +64,17 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
 
     @Synchronized
     fun getSchedulesBetweenTimePoint(startDataTime: LocalDateTime, endDataTime: LocalDateTime?): List<Schedule> {
-        if (startDataTime == null) throw BadRequestException("Param TrainNumber is null")
-        val endScheduleTime: LocalDateTime
-        if (endDataTime == null) {
+        if (startDataTime == null) throw BadRequestException("Param startDataTime is null")
+        val endScheduleTime: LocalDateTime = if (endDataTime == null) {
             val dataRequest = startDataTime.toLocalDate()
-            endScheduleTime = dataRequest.atTime(23, 59, 59)
+            dataRequest.atTime(23, 59, 59)
         } else {
-            endScheduleTime = endDataTime
+            endDataTime
         }
         val listWithTrueSchedule: MutableList<Schedule> = ArrayList()
         for ((key, value) in scheduleMap) {
             for (schedule in value) {
-                if (schedule.departureTime.isAfter(startDataTime) && schedule.arrivalTime.isBefore(endScheduleTime)) {
-                    listWithTrueSchedule.add(schedule)
-                } else if (schedule.departureTime.isBefore(startDataTime) && schedule.arrivalTime.isAfter(startDataTime) && schedule.arrivalTime.isBefore(endScheduleTime)) {
-                    listWithTrueSchedule.add(schedule)
-                } else if (schedule.departureTime.isAfter(startDataTime) && schedule.departureTime.isBefore(endScheduleTime) && schedule.arrivalTime.isAfter(endScheduleTime)) {
-                    listWithTrueSchedule.add(schedule)
-                } else if (schedule.departureTime.isBefore(startDataTime) && schedule.arrivalTime.isAfter(endScheduleTime)) {
+                if (schedule.departureTime.isBefore(endScheduleTime) && schedule.arrivalTime.isAfter(startDataTime)) {
                     listWithTrueSchedule.add(schedule)
                 }
             }
@@ -88,7 +85,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
     @Synchronized
     fun saveSchedule(trainNumber: Int, schedule: Schedule?) {
         var scheduleList: MutableList<Schedule> = ArrayList()
-        if (trainNumber == 0) throw BadRequestException("Train number is $trainNumber")
+        if (trainNumber == 0) throw BadRequestException("Train number is 0")
         if (scheduleMap.containsKey(trainNumber)) {
             if (scheduleMap.containsKey(trainNumber) != null) {
                 scheduleList = scheduleMap[trainNumber]!!
@@ -106,7 +103,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
     }
 
     /**
-     * создает список расписания для поезда
+     * Создает список расписания для поезда
      */
     fun createScheduleListForTrain() {
         var scheduleList: MutableList<Schedule>
@@ -117,27 +114,35 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
     }
 
     /**
-     * происходит выбор машиниста: если previousDriverId == 0, то происходит проверка машинистов
+     * Происходит выбор машиниста: если previousDriverId == 0, то происходит проверка машинистов
      * из списка машинисов(проверяется время начала работы, время конца работы и доступность)
      * если машинст выбран previousDriverId != 0, то происходит проверка на время завершения работы машиниста
      * @param startTimeLap - время начала отправления поезда с начальной станции
      * @param endTimeLap - время прибытия поезда на конечную станцию
      * @param previousDriverId - номер машиниста, который управлял поездом,
-     * если никого не было, то равно 0
+     * Если никого не было, то равно 0
      * @return id машиниста
      */
     fun chooseDriver(startTimeLap: LocalDateTime?, endTimeLap: LocalDateTime?, previousDriverId: Int): Int {
-        if (startTimeLap != null && endTimeLap != null) {
+        try {
+            if (startTimeLap == null && endTimeLap == null) throw Exception("Failed choose driver")
             var id = 0
             if (previousDriverId != 0) {
-                if (checkTimeOfEndWorkOfDriver(workShiftOfDriver[previousDriverId]?.endWorkTime, endTimeLap)) {
-                    id = previousDriverId
+                id = if (checkTimeOfEndWorkOfDriver(workShiftOfDriver[previousDriverId]?.endWorkTime, endTimeLap)) {
+                    previousDriverId
                 } else {
-                    id = chooseDriver(startTimeLap, endTimeLap, 0)
+                    chooseDriver(startTimeLap, endTimeLap, 0)
                 }
             } else {
                 for ((driverId, workShift) in workShiftOfDriver) {
-                    if (checkTimeOfStartWorkOfDriver(workShift.startWorkTime, startTimeLap) && checkTimeOfEndWorkOfDriver(workShift.endWorkTime, endTimeLap) && driverService.checkDriverIsAvailable(driverId)) {
+                    if (checkTimeOfStartWorkOfDriver(
+                            workShift.startWorkTime,
+                            startTimeLap
+                        ) && checkTimeOfEndWorkOfDriver(
+                            workShift.endWorkTime,
+                            endTimeLap
+                        ) && driverService.checkDriverIsAvailable(driverId)
+                    ) {
                         id = driverId
                         driverService.updateIsAvailableOnFalse(driverId)
                         break
@@ -145,13 +150,13 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
                 }
             }
             return id
-        } else {
-            throw Exception("Failed choose driver")
+        } catch (e: Exception) {
+            return 0
         }
     }
 
     /**
-     * метод для проверки, начинает ли машинист раньше, чем время отправления поезда с начальной станции
+     * Метод для проверки, начинает ли машинист раньше, чем время отправления поезда с начальной станции
      * @param startTimeOfWorkOfDriver начала смены машиниста
      * @param startTimeLap отправления поезда с начальной станции
      * @return true если машинист начинает раньше, чем поезд отправляет с начальной станции
@@ -161,12 +166,12 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
         if (startTimeOfWorkOfDriver != null && startTimeLap != null) {
             return startTimeOfWorkOfDriver.isBefore(startTimeLap)
         } else {
-            throw Exception("Failed check time in checkTimeOfStartWorkOfDriver")
+            throw Exception()
         }
     }
 
     /**
-     * метод для проверки, заканчивается ли время работы машиниста раньше, чем время прибытия поезда на конечную станцию
+     * Метод для проверки, заканчивается ли время работы машиниста раньше, чем время прибытия поезда на конечную станцию
      * @param endTimeOfWorkOfDriver - время конца смены машиниста
      * @param endTimeLap: - время прибытия поезда на конечную станцию
      * @return возврашает true если время машинист заканчивает позже, чем прибывает поезд на еонечную станцию
@@ -176,7 +181,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
         if (endTimeOfWorkOfDriver != null && endTimeLap != null) {
             return endTimeOfWorkOfDriver.isAfter(endTimeLap)
         } else {
-            throw Exception("Failed check time in checkTimeOfEndWorkOfDriver")
+            throw Exception()
         }
     }
 
@@ -195,6 +200,30 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
     }
 
     /**
+     * Метод для создания списка расписания
+     * @return scheduleList - список расписаний
+     */
+    private fun createScheduleList(): MutableList<Schedule> {
+        val scheduleList: MutableList<Schedule> = mutableListOf()
+        try {
+            var trainNumberOuterCircle = basicProperties.trainNumberOuterCircle
+            var previousDriverId = 0
+            for ((startTimeLap, endTimeLap) in timeAllLaps) {
+                var driverId = chooseDriver(startTimeLap, endTimeLap, previousDriverId)
+                if (driverId == 0) throw Exception("createScheduleList: Driver Id = 0")
+                scheduleList.add(createSchedule(basicProperties.codOfTechnicalOperationWithTrains, trainNumberOuterCircle, basicProperties.trainIndex, basicProperties.countTrainOnLine, basicProperties.sequentialNumberOfBrigade, driverId,
+                    startTimeLap, endTimeLap, basicProperties.codeOfHeadWagon))
+                trainNumberOuterCircle += 2
+                previousDriverId = driverId
+            }
+            return scheduleList
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return scheduleList
+        }
+    }
+
+    /**
      * Заполнение workShiftOfDriver
      */
     private fun createWorkShiftOfDriver() {
@@ -208,10 +237,11 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
      */
     private fun createMapOfTimeAllLaps() {
         if (basicProperties.startWorkOfRollingStock != null) {
+            if (basicProperties.startWorkOfRollingStock?.isAfter(basicProperties.endWorkOfRollingStock) == true) throw Exception()
             var startTimeLap = basicProperties.startWorkOfRollingStock
             var endTimeOfLap = sumTime(startTimeLap, basicProperties.timeLap)
             do {
-                timeAllLaps[startTimeLap] = endTimeOfLap
+                timeAllLaps[startTimeLap!!] = endTimeOfLap
                 startTimeLap = endTimeOfLap
                 endTimeOfLap = sumTime(startTimeLap, basicProperties.timeLap)
             } while (endTimeOfLap.isBefore(basicProperties.endWorkOfRollingStock))
@@ -219,26 +249,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
     }
 
     /**
-     * метод для создания списка расписания
-     * @return scheduleList - список расписаний
-     */
-    private fun createScheduleList(): MutableList<Schedule> {
-        val scheduleList: MutableList<Schedule> = ArrayList()
-        var trainNumberOuterCircle = basicProperties.trainNumberOuterCircle
-        var previousDriverId = 0
-        for ((startTimeLap, endTimeLap) in timeAllLaps) {
-            var driverId = chooseDriver(startTimeLap, endTimeLap, previousDriverId)
-            if (driverId == 0) throw Exception("createScheduleList: Driver Id = 0")
-            scheduleList.add(createSchedule(basicProperties.codOfTechnicalOperationWithTrains, trainNumberOuterCircle, basicProperties.trainIndex, basicProperties.countTrainOnLine, basicProperties.sequentialNumberOfBrigade, driverId,
-                    startTimeLap, endTimeLap, basicProperties.codeOfHeadWagon))
-            trainNumberOuterCircle += 2
-            previousDriverId = driverId
-        }
-        return scheduleList
-    }
-
-    /**
-     * метод для создания расписания
+     * Метод для создания расписания
      * @return schedule расписания
      */
     private fun createSchedule(codOfTechnicalOperationWithTrains: Int, trainNumber: Int, trainIndex: Int,
