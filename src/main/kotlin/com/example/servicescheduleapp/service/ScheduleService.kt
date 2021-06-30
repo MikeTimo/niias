@@ -136,11 +136,9 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
             } else {
                 for ((driverId, workShift) in workShiftOfDriver) {
                     if (checkTimeOfStartWorkOfDriver(
-                            workShift.startWorkTime,
-                            startTimeLap
+                            workShift.startWorkTime, startTimeLap
                         ) && checkTimeOfEndWorkOfDriver(
-                            workShift.endWorkTime,
-                            endTimeLap
+                            workShift.endWorkTime, endTimeLap
                         ) && driverService.checkDriverIsAvailable(driverId)
                     ) {
                         id = driverId
@@ -236,15 +234,18 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
      * Заполнение timeAllLaps данными
      */
     private fun createMapOfTimeAllLaps() {
-        if (basicProperties.startWorkOfRollingStock != null) {
+        try {
+            if (basicProperties.startWorkOfRollingStock == null) throw Exception()
             if (basicProperties.startWorkOfRollingStock?.isAfter(basicProperties.endWorkOfRollingStock) == true) throw Exception()
             var startTimeLap = basicProperties.startWorkOfRollingStock
             var endTimeOfLap = sumTime(startTimeLap, basicProperties.timeLap)
-            do {
+            while (endTimeOfLap.isBefore(basicProperties.endWorkOfRollingStock)) {
                 timeAllLaps[startTimeLap!!] = endTimeOfLap
                 startTimeLap = endTimeOfLap
                 endTimeOfLap = sumTime(startTimeLap, basicProperties.timeLap)
-            } while (endTimeOfLap.isBefore(basicProperties.endWorkOfRollingStock))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -252,14 +253,30 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
      * Метод для создания расписания
      * @return schedule расписания
      */
-    private fun createSchedule(codOfTechnicalOperationWithTrains: Int, trainNumber: Int, trainIndex: Int,
-                               countTrainOnLine: Int, sequentialNumberOfBrigade: Int, driverId: Int, startTimeLap: LocalDateTime?,
-                               endTimeLap: LocalDateTime, codeOfHeadWagon: String): Schedule {
+    private fun createSchedule(
+        codOfTechnicalOperationWithTrains: Int, trainNumber: Int, trainIndex: Int,
+        countTrainOnLine: Int, sequentialNumberOfBrigade: Int, driverId: Int, startTimeLap: LocalDateTime?,
+        endTimeLap: LocalDateTime, codeOfHeadWagon: String
+    ): Schedule {
         val schedule: Schedule
         if (startTimeLap != null) {
-            schedule = Schedule(codOfTechnicalOperationWithTrains, trainNumber, trainIndex, countTrainOnLine,
-                    sequentialNumberOfBrigade, driverId, "Андроновка Оп", "Андроновка Оп",
-                    startTimeLap, startTimeLap, "Андроновка Оп", "Андроновка Оп", endTimeLap, endTimeLap, codeOfHeadWagon)
+            schedule = Schedule(
+                codOfTechnicalOperationWithTrains,
+                trainNumber,
+                trainIndex,
+                countTrainOnLine,
+                sequentialNumberOfBrigade,
+                driverId,
+                nameOfDepartureStation = "Андроновка Оп",
+                nameOfDepartureStationWithBrigade = "Андроновка Оп",
+                departureTime = startTimeLap,
+                departureTimeWithBrigade = startTimeLap,
+                nameOfArrivalStation = "Андроновка Оп",
+                nameOfArrivalStationWithBrigade = "Андроновка Оп",
+                arrivalTime = endTimeLap,
+                arrivalTimeWithBrigade = endTimeLap,
+                codeOfHeadWagon
+            )
         } else {
             throw Exception()
         }
