@@ -36,7 +36,7 @@ class RollingStockControllerTest {
     fun getRollingStockByIdIsZero() {
         val rollingStockId = 0
 
-        given(rollingStockService.getRollingStockById(rollingStockId)).willThrow(BadRequestException::class.java)
+        given(rollingStockService.getRollingStockById(rollingStockId)).willAnswer {throw BadRequestException()}
         mockMvc.perform(get("/rolling-stock/0")).andExpect(status().isBadRequest)
     }
 
@@ -44,7 +44,7 @@ class RollingStockControllerTest {
     fun getRollingStockByIdIsWrong() {
         val rollingStockId = 10
 
-        given(rollingStockService.getRollingStockById(rollingStockId)).willThrow(NotFoundException::class.java)
+        given(rollingStockService.getRollingStockById(rollingStockId)).willAnswer {throw NotFoundException()}
         mockMvc.perform(get("/rolling-stock/10")).andExpect(status().isNotFound)
     }
 
@@ -60,7 +60,7 @@ class RollingStockControllerTest {
     fun getRollingStockByNumberIsZero() {
         val rollingStockNumber = 0
 
-        given(rollingStockService.getRollingStockByNumber(rollingStockNumber)).willThrow(BadRequestException::class.java)
+        given(rollingStockService.getRollingStockByNumber(rollingStockNumber)).willAnswer {throw BadRequestException()}
         mockMvc.perform(get("/rolling-stock?number=0")).andExpect(status().isBadRequest)
     }
 
@@ -68,7 +68,7 @@ class RollingStockControllerTest {
     fun getRollingStockByNumberIsWrong() {
         val rollingStockNumber = 10
 
-        given(rollingStockService.getRollingStockByNumber(rollingStockNumber)).willThrow(NotFoundException::class.java)
+        given(rollingStockService.getRollingStockByNumber(rollingStockNumber)).willAnswer {throw NotFoundException()}
         mockMvc.perform(get("/rolling-stock?number=10")).andExpect(status().isNotFound)
     }
 

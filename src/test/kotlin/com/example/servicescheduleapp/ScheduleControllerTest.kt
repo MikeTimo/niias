@@ -42,7 +42,7 @@ class ScheduleControllerTest {
 
         given(scheduleService.getScheduleOnDayByTrain(trainNumber)).willReturn(scheduleList)
 
-        mockMvc.perform(get("/schedule").param("trainNumber", trainNumber.toString())).andExpect(status().isOk)
+        mockMvc.perform(get("/schedule/get").param("trainNumber", trainNumber.toString())).andExpect(status().isOk)
 
     }
 
@@ -65,7 +65,7 @@ class ScheduleControllerTest {
 
         given(scheduleService.getSchedulesBetweenTimePoint(startDataTime, endDataTime)).willReturn(scheduleList)
 
-        mockMvc.perform(get("/schedule/list").param("startDataTime", startDataTime.toString()).param("endDataTime", endDataTime.toString())).andExpect(status().isOk)
+        mockMvc.perform(get("/schedule/get-list").param("startDataTime", startDataTime.toString()).param("endDataTime", endDataTime.toString())).andExpect(status().isOk)
     }
 
     @Test
@@ -86,21 +86,6 @@ class ScheduleControllerTest {
 
         given(scheduleService.getSchedulesBetweenTimePoint(startDataTime, null)).willReturn(scheduleList)
 
-        mockMvc.perform(get("/schedule/list").param("startDataTime", startDataTime.toString())).andExpect(status().isOk)
-    }
-
-    @Test
-    fun saveSchedule() {
-        val schedule1 = Schedule(1, 8001, 22551, 15, 21, 1, "Андроновка Оп", "Андроновка Оп",
-                LocalDateTime.of(2020, 10, 10, 16, 30, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0), "Андроновка Оп", "Андроновка Оп", LocalDateTime.of(2020, 10, 10, 17, 0, 0), LocalDateTime.of(2020, 10, 10, 16, 30, 0),
-                "645В")
-
-        val trainNumber = 113
-        val gson = Gson()
-        val jsonSchedule: String = gson.toJson(schedule1)
-
-        doNothing().`when`(scheduleService).saveSchedule(anyInt(), any(Schedule::class.java))
-
-        mockMvc.perform(post("/schedule").param("trainNumber", trainNumber.toString()).contentType(MediaType.APPLICATION_JSON).content(jsonSchedule)).andExpect(status().isOk)
+        mockMvc.perform(get("/schedule/get-list").param("startDataTime", startDataTime.toString())).andExpect(status().isOk)
     }
 }

@@ -62,7 +62,7 @@ class DriverControllerTest {
     fun getDriverWhenDriverIdIsZero() {
         val driverId = 0
 
-        given(driverService.getDriverById(driverId)).willThrow(BadRequestException::class.java)
+        given(driverService.getDriverById(driverId)).willAnswer {throw BadRequestException()}
         mockMvc.perform(get("/drivers/0")).andExpect(status().isBadRequest)
     }
 
@@ -70,13 +70,12 @@ class DriverControllerTest {
     fun getDriverWhenDriverIdIsWrong() {
         val driverId = 7
 
-        given(driverService.getDriverById(driverId)).willThrow(NotFoundException::class.java)
+        given(driverService.getDriverById(driverId)).willAnswer {throw NotFoundException()}
         mockMvc.perform(get("/drivers/7")).andExpect(status().isNotFound)
     }
 
     @Test
     fun deleteDriver() {
-        val driver = Driver(1, 454, "Олег", "Иванович", "Иванов", true)
         val driverId = 1
 
         doNothing().`when`(driverService).deleteDriverById(anyInt())

@@ -149,6 +149,7 @@ class ScheduleService(@Qualifier("basicConfigBean") val basicProperties: BasicPr
             }
             return id
         } catch (e: Exception) {
+            e.printStackTrace()
             return 0
         }
     }
