@@ -13,19 +13,19 @@ class RollingStockController {
     @Autowired
     lateinit var rollingStockService: RollingStockService
 
-    @GetMapping("/{id}")
+    @RequestMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     fun getRollingStockById(@PathVariable id: Int): RollingStock {
         return rollingStockService.getRollingStockById(id)
     }
 
-    @GetMapping()
+    @RequestMapping()
     @ResponseStatus(HttpStatus.OK)
     fun getRollingStockByNumber(@RequestParam(value = "number") number: Int): RollingStock {
         return rollingStockService.getRollingStockByNumber(number)
     }
 
-    @GetMapping("/list")
+    @RequestMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     fun getAllRollingStock(): List<RollingStock> {
         return rollingStockService.getAllRollingStock()

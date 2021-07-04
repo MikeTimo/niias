@@ -15,7 +15,7 @@ class ScheduleController {
     @Autowired
     lateinit var scheduleService: ScheduleService
 
-    @GetMapping("/get")
+    @RequestMapping("/get")
     @ResponseStatus(HttpStatus.OK)
     fun getTrainSchedule(
             @RequestParam(value = "trainNumber") trainNumber: Int
@@ -23,7 +23,7 @@ class ScheduleController {
         return scheduleService.getScheduleOnDayByTrain(trainNumber)
     }
 
-    @GetMapping("/get-list")
+    @RequestMapping("/get-list")
     @ResponseStatus(HttpStatus.OK)
     fun getSchedules(
             @RequestParam(value = "startDataTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) startDateTime: LocalDateTime,
@@ -32,7 +32,7 @@ class ScheduleController {
         return scheduleService.getSchedulesBetweenTimePoint(startDateTime, endDateTime)
     }
 
-    @PostMapping("/post")
+    @RequestMapping("/post")
     @ResponseStatus(HttpStatus.CREATED)
     fun saveSchedule(@RequestParam(value = "trainNumber") trainNumber: Int, @RequestBody schedule: Schedule): String {
         scheduleService.saveSchedule(trainNumber, schedule)

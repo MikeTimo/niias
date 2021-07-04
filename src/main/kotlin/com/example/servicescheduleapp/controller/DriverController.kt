@@ -14,25 +14,25 @@ class DriverController {
     lateinit var driverService: DriverService
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/available")
+    @RequestMapping("/available")
     fun getAvailableDriver(): List<Driver> {
         return driverService.getAvailableDrivers()
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping()
+    @RequestMapping()
     fun getAllDrivers(): List<Driver> {
         return driverService.getAllDrivers()
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{id}")
+    @RequestMapping("/{id}")
     fun getDriver(@PathVariable id: Int): Driver {
         return driverService.getDriverById(id)
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/{id}/delete")
+    @RequestMapping("/{id}/delete")
     fun deleteDriver(@PathVariable id: Int) {
         driverService.deleteDriverById(id)
     }
